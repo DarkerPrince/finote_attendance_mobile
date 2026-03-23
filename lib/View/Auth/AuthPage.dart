@@ -47,11 +47,11 @@ class _AuthPageState extends State<AuthPage> {
         listener: (context, state) {
           if (state is AuthAuthenticated) {
             // Navigate to home page after login success
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                  const MyHomePage(title: "Home Page")),
+                  builder: (context) => MyHomePage(userId: state.user.id,)),
             );
           } else if (state is AuthError) {
             // Show error message

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  String userId;
+  ProfilePage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +20,7 @@ class ProfilePage extends StatelessWidget {
                 (route) => false, // remove all previous pages
           );
         }
+
       },
       child: Scaffold(
         appBar: AppBar(
@@ -26,8 +28,8 @@ class ProfilePage extends StatelessWidget {
           centerTitle: true,
         ),
         body: BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        if (state is AuthAuthenticated) {
+           builder: (context, state) {
+          if (state is AuthAuthenticated) {
           final user = state.user;
 
           return Padding(

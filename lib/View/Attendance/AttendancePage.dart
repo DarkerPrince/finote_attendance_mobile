@@ -8,7 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class Attendancepage extends StatefulWidget {
-  const Attendancepage({super.key});
+  String userId;
+  Attendancepage({super.key,required this.userId});
 
   @override
   State<Attendancepage> createState() => _AttendancepageState();
@@ -19,14 +20,7 @@ class _AttendancepageState extends State<Attendancepage> {
   @override
   void initState() {
     super.initState();
-    loadUserAttendance();
-  }
-
-  loadUserAttendance()async{
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId') ?? '';
-    // ✅ Trigger the load programs event when page opens
-    context.read<AttendanceBloc>().add(LoadAttendance(userID: userId));
+    context.read<AttendanceBloc>().add(LoadAttendance(userID: widget.userId));
   }
 
   @override
@@ -50,7 +44,7 @@ class _AttendancepageState extends State<Attendancepage> {
                       child: TimelineTile(
                         alignment: TimelineAlign.start,
                         isFirst: index == 0,
-                        isLast: index == 3,
+                        isLast: index == (state.attendance.length-1),
 
                         indicatorStyle: IndicatorStyle(
                           width: 50,
@@ -70,9 +64,7 @@ class _AttendancepageState extends State<Attendancepage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min, // prevents overflow
-                            children: [
-                              Attendancecard()
-                            ],
+                            children: state.attendance[index].attendancePrograms.map((attendance)=>Attendancecard(attendance: attendance,)).toList(),
                           ),
                         ),
                       ),

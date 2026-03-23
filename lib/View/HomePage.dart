@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.userId});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -16,13 +16,27 @@ class MyHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  final String userId;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _pages = [
+      ProgramsPage(),
+      Attendancepage(userId: widget.userId),
+      ProfilePage(userId: widget.userId)
+    ];
+  }
+
   int _currentIndex = 0;
 
   Color getStatusColor(String status) {
@@ -37,12 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
         return Colors.grey;
     }
   }
-
-  final List<Widget> _pages = [
-    ProgramsPage(),
-    Attendancepage(),
-    ProfilePage()
-  ];
 
   void _onTabTapped(int index) {
     setState(() {

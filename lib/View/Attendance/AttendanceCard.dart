@@ -1,12 +1,15 @@
+import 'package:finote_program/Models/AttendanceModel.dart';
 import 'package:flutter/material.dart';
 
 class Attendancecard extends StatelessWidget {
-  const Attendancecard({super.key});
+  AttendanceModel attendance;
+  Attendancecard({super.key,required this.attendance});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(8),
+      margin: EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -40,7 +43,7 @@ class Attendancecard extends StatelessWidget {
               children: [
                 // 📌 Title
                 Text(
-                  "Sunday Program",
+                  attendance.title,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,

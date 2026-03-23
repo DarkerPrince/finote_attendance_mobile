@@ -12,22 +12,24 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  final userId = prefs.getString('userId') ?? null;
 
-  runApp(MyApp(isLoggedIn: isLoggedIn));
+  runApp(MyApp(isLoggedIn: isLoggedIn,userId: userId??"",));
 }
 
 class MyApp extends StatelessWidget {
 
 
   final bool isLoggedIn;
+  final String userId;
 
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key, required this.isLoggedIn, required this.userId});
 
   @override
   Widget build(BuildContext context) {
 
-    String baseUrl = "http://192.168.1.8:5001";
-    // String baseUrl = "http://172.16.0.2:5001";
+    // String baseUrl = "http://192.168.1.8:5001";
+    String baseUrl = "http://172.20.10.5:5001";
     // String baseUrl = "http://10.0.2.2:5001";
     return MultiBlocProvider(
       providers: [
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
           create: (_) => ProgramsBloc(baseUrl: "$baseUrl/programs"), // load programs immediately
         ),
         BlocProvider<AttendanceBloc>(
-          create: (_) => AttendanceBloc(baseUrl: "$baseUrl/users/attendance"), // load programs immediately
+          create: (_) => AttendanceBloc(baseUrl: "$baseUrl/users/attendance-personal"), // load programs immediately
         ),
       ],
       child: MaterialApp(
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.deepPurple,
           useMaterial3: true,
         ),
-        home: isLoggedIn ? const MyHomePage(title: "Home Page") : const AuthPage(),
+        home: isLoggedIn ? MyHomePage(userId: userId ) : const AuthPage(),
       ),
     );
   }

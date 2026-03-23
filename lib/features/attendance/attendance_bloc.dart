@@ -20,8 +20,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('userId') ?? '';
-      final attendance =
-          await AttendanceRepository(baseUrl: baseUrl).fetchAttendance(userId);
+      final attendance = await AttendanceRepository(baseUrl: baseUrl).fetchAttendance(userId);
       emit(AttendanceLoaded(attendance));
     } catch (e) {
       emit(AttendanceError("Failed to fetch programs"));

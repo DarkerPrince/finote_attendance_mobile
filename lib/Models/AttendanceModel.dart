@@ -17,3 +17,25 @@ class AttendanceModel {
     );
   }
 }
+
+
+class GroupAttendanceModel {
+  final String attendanceDate;
+  final List<AttendanceModel> attendancePrograms;
+
+  GroupAttendanceModel({
+    required this.attendanceDate,
+    required this.attendancePrograms,
+  });
+
+  factory GroupAttendanceModel.fromJson(Map<String, dynamic> json) {
+    final List attendances = json['attendances'];
+
+    return GroupAttendanceModel(
+      attendanceDate: json['day'],
+      attendancePrograms: attendances
+          .map((e) => AttendanceModel.fromJson(e))
+          .toList(),
+    );
+  }
+}

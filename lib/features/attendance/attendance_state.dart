@@ -9,7 +9,7 @@ abstract class AttendanceState extends Equatable {
 class AttendanceInitial extends AttendanceState {}
 class AttendanceLoading extends AttendanceState {}
 class AttendanceLoaded extends AttendanceState {
-  final List<AttendanceModel> attendance;
+  final List<GroupAttendanceModel> attendance;
   AttendanceLoaded(this.attendance);
 
   @override
