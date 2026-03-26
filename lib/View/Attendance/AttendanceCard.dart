@@ -1,4 +1,5 @@
 import 'package:finote_program/Models/AttendanceModel.dart';
+import 'package:finote_program/utils/colorUtils.dart';
 import 'package:flutter/material.dart';
 
 class Attendancecard extends StatelessWidget {
@@ -53,7 +54,7 @@ class Attendancecard extends StatelessWidget {
                 SizedBox(height: 4),
 
                 Text(
-                  "Some Small Description about the sunday program of the program inserted in here",
+                  attendance.description,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
@@ -68,13 +69,13 @@ class Attendancecard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade100,
+                    color: getStatusColor(attendance.status),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
-                    "Present",
+                  child: Text(
+                    attendance.status,
                     style: TextStyle(
-                      color: Colors.green,
+                      color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -85,7 +86,7 @@ class Attendancecard extends StatelessWidget {
 
                 // 👤 Handled by
                 Text(
-                  "Controlled by: John Doe",
+                  "By Leul Sis - ${attendance.startDate}",
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],

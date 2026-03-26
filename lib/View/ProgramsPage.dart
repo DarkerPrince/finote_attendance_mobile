@@ -35,9 +35,7 @@ class _ProgramsPageState extends State<ProgramsPage> {
               child: Column(
                 children: state.programs
                     .map((program) => Programcard(
-                  title: program.title,
-                  description: program.description,
-                  startDate: program.startDate,
+                  program: program,
                 ))
                     .toList(),
               ),

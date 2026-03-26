@@ -33,24 +33,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _pages = [
       ProgramsPage(),
       Attendancepage(userId: widget.userId),
-      ProfilePage(userId: widget.userId)
+      ProfilePage()
     ];
   }
 
   int _currentIndex = 0;
-
-  Color getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "present":
-        return Colors.green;
-      case "absent":
-        return Colors.red;
-      case "by permission":
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
 
   void _onTabTapped(int index) {
     setState(() {

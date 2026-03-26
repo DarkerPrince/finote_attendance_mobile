@@ -1,19 +1,12 @@
+import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:flutter/material.dart';
 
 class ProgramDetailPage extends StatelessWidget {
-  final String title;
-  final String description;
-  final String imageUrl;
-  final String date;
-  final String author;
+  final ProgramModel program;
 
   const ProgramDetailPage({
     super.key,
-    required this.title,
-    required this.description,
-    required this.imageUrl,
-    required this.date,
-    required this.author,
+    required this.program,
   });
 
   @override
@@ -28,7 +21,7 @@ class ProgramDetailPage extends StatelessWidget {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                imageUrl,
+                "https://images.squarespace-cdn.com/content/v1/5759a0b362cd94a47d9c6242/1465498218086-IO3IIO7FP8QBHL6N585H/slide3.jpg?format=1500w",
                 fit: BoxFit.cover,
               ),
             ),
@@ -47,11 +40,11 @@ class ProgramDetailPage extends StatelessWidget {
                     children: [
                       Icon(Icons.calendar_today, size: 14),
                       SizedBox(width: 6),
-                      Text(date, style: TextStyle(color: Colors.grey)),
+                      Text(program.startDate, style: TextStyle(color: Colors.grey)),
                       SizedBox(width: 16),
                       Icon(Icons.person, size: 14),
                       SizedBox(width: 6),
-                      Text(author, style: TextStyle(color: Colors.grey)),
+                      Text("By Temert Kefel", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
 
@@ -59,7 +52,7 @@ class ProgramDetailPage extends StatelessWidget {
 
                   // 📝 Title
                   Text(
-                    title,
+                    program.title,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -70,7 +63,7 @@ class ProgramDetailPage extends StatelessWidget {
 
                   // 📄 Description
                   Text(
-                    description,
+                    program.description,
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.5,

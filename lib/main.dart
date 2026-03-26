@@ -28,19 +28,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // String baseUrl = "http://192.168.1.8:5001";
-    String baseUrl = "http://172.20.10.5:5001";
+    String baseUrl = "http://192.168.1.10:5001";
+    // String baseUrl = "http://172.20.10.5:5001";
     // String baseUrl = "http://10.0.2.2:5001";
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(baseUrl: "$baseUrl/auth/login"),
+          create: (_) => AuthBloc(baseUrl: baseUrl),
         ),
         BlocProvider<ProgramsBloc>(
-          create: (_) => ProgramsBloc(baseUrl: "$baseUrl/programs"), // load programs immediately
+          create: (_) => ProgramsBloc(baseUrl: baseUrl), // load programs immediately
         ),
         BlocProvider<AttendanceBloc>(
-          create: (_) => AttendanceBloc(baseUrl: "$baseUrl/users/attendance-personal"), // load programs immediately
+          create: (_) => AttendanceBloc(baseUrl: baseUrl), // load programs immediately
         ),
       ],
       child: MaterialApp(

@@ -1,33 +1,19 @@
+import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:finote_program/View/Program/ProgramDetailPage.dart';
 import 'package:finote_program/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
 
 class Programcard extends StatelessWidget {
-  String title;
-  String description;
-  String startDate;
-  Programcard({super.key , required this.title , required this.description, required this.startDate});
+  ProgramModel program;
+  Programcard({super.key , required this.program});
 
   @override
   Widget build(BuildContext context) {
-    Map<String, String> programDetailInfo = {
-      "title": title,
-      "description":
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      "image":
-          "https://images.squarespace-cdn.com/content/v1/5759a0b362cd94a47d9c6242/1465498218086-IO3IIO7FP8QBHL6N585H/slide3.jpg?format=1500w",
-      "date": "June 12, 2024",
-      "author": "M/r Alebachew Demisse"
-    };
     return InkWell(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (builder) => ProgramDetailPage(
-                title: programDetailInfo['title'] ?? "",
-                description: programDetailInfo['description'] ?? "description",
-                imageUrl: programDetailInfo['image'] ?? "imageUrl",
-                date: programDetailInfo['date'] ?? "date",
-                author: programDetailInfo['author'] ?? "author")));
+                program: program,)));
       },
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -58,7 +44,7 @@ class Programcard extends StatelessWidget {
                     Wrap(
                       children: [
                         Text(
-                          title,
+                          program.title,
                           maxLines: 2, // how many lines you want
                           overflow: TextOverflow.ellipsis, // adds ...
                           style: TextStyle(fontWeight: FontWeight.w600),
@@ -68,7 +54,7 @@ class Programcard extends StatelessWidget {
                     Wrap(
                       children: [
                         Text(
-                          description,
+                          program.description,
                           maxLines: 2, // how many lines you want
                           overflow: TextOverflow.ellipsis, // adds ...
                           style: TextStyle(fontWeight: FontWeight.w600),
@@ -76,7 +62,7 @@ class Programcard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      formatDate(startDate),
+                      formatDate(program.startDate),
                       style: TextStyle(color: Colors.blueAccent),
                     ),
                     // IconButton(onPressed: () {}, icon: Icon(Icons.bookmark_add))

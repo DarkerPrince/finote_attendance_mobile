@@ -1,152 +1,151 @@
+import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/View/Auth/AuthPage.dart';
+import 'package:finote_program/View/ControllersPage/ControllersPage.dart';
 import 'package:finote_program/features/auth/auth_bloc.dart';
 import 'package:finote_program/features/auth/auth_event.dart';
 import 'package:finote_program/features/auth/auth_state.dart';
+import 'package:finote_program/utils/userUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfilePage extends StatelessWidget {
-  String userId;
-  ProfilePage({super.key, required this.userId});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  UserModel? localUser;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await getUserFromLocal();
+    setState(() {
+      localUser = user;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthInitial) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const AuthPage()),
-                (route) => false, // remove all previous pages
-          );
-        }
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Profile"),
-          centerTitle: true,
+    if (localUser == null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("No user data found"),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to login
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AuthPage()),
+                  );
+                },
+                child: const Text("Login"),
+              ),
+            ],
+          ),
         ),
-        body: BlocBuilder<AuthBloc, AuthState>(
-           builder: (context, state) {
-          if (state is AuthAuthenticated) {
-          final user = state.user;
+      );
+    }
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // Profile Picture
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                    user.image ?? "https://i.pravatar.cc/150?img=3",
-                  ),
-                ),
+    final user = localUser!;
 
-                const SizedBox(height: 16),
-
-                // Name
-                Text(
-                  user.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 4),
-
-                // Email
-                Text(
-                  user.email,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  user.bio ?? "No bio available",
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 20),
-
-                ListTile(
-                  dense: true,
-                  title: Text(user.className?['title'] ?? "N/A"),
-                  subtitle: const Text("Class"),
-                  leading: const Icon(Icons.class_),
-                ),
-                const Divider(),
-
-                ListTile(
-                  dense: true,
-                  title: Text(user.department?['title'] ?? "N/A"),
-                  subtitle: const Text("Department"),
-                  leading: const Icon(Icons.house_rounded),
-                ),
-                const Divider(),
-
-                ListTile(
-                  dense: true,
-                  title: Text(user.lastAttendance ?? "N/A"),
-                  subtitle: const Text("Last Attended"),
-                  leading: const Icon(Icons.calendar_month_rounded),
-                ),
-                const Divider(),
-
-                ListTile(
-                  dense: true,
-                  title: Text(user.phone ?? "N/A"),
-                  subtitle: const Text("Phone Number"),
-                  leading: const Icon(Icons.phone),
-                ),
-                const Divider(),
-
-                ListTile(
-                  dense: true,
-                  title: Text(user.role?[0]['title'] ?? "N/A"),
-                  subtitle: const Text("Role"),
-                  leading: const Icon(Icons.admin_panel_settings),
-                ),
-
-                const SizedBox(height: 20),
-
-                ElevatedButton.icon(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(LogoutRequested());
-                  },
-                  icon: const Icon(Icons.logout),
-                  label: const Text("Logout"),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (state is AuthLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        return Center(child: Column(
-          mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      appBar: AppBar(title: const Text("Profile")),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
           children: [
-            Text("Not logged in"),
+            const CircleAvatar(
+              radius: 50,
+              child: Icon(Icons.person),
+            ),
+            const SizedBox(height: 16),
+            Text(user.name,
+                style: const TextStyle(
+                    fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            Text(user.email,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+            const SizedBox(height: 12),
+            Text(user.bio ?? "No bio available", textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.calendar_month_rounded),
+              title: Text(user.lastAttendance ?? "N/A"),
+              subtitle: const Text("Last Attended"),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.class_),
+              title: Text(user.className?['title'] ?? "N/A"),
+              subtitle: const Text("Class"),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.house_rounded),
+              title: Text(user.department?['title'] ?? "N/A"),
+              subtitle: const Text("Department"),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.phone),
+              title: Text(user.phone ?? "N/A"),
+              subtitle: const Text("Phone Number"),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.admin_panel_settings),
+              title: Text(user.role?[0]['title'] ?? "N/A"),
+              subtitle: const Text("Role"),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.list_alt),
+              title: const Text("Controlling Programs"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ControllersPage(userId: user.id)),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: () {
-                context.read<AuthBloc>().add(LogoutRequested());
+              onPressed: () async {
+                // await clearUserLocally();
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('authToken');
+                await prefs.remove('user');
+                await prefs.setBool('isLoggedIn', false);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AuthPage()),
+                );
               },
               icon: const Icon(Icons.logout),
-              label: const Text("Login TO Account"),
+              label: const Text("Logout"),
             ),
           ],
-        ));
-      },
-      )
+        ),
       ),
     );
   }

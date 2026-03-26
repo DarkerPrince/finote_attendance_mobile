@@ -2,11 +2,13 @@ class AttendanceModel {
   final String title;
   final String description;
   final String startDate;
+  final String status;
 
   AttendanceModel({
     required this.title,
     required this.description,
     required this.startDate,
+    required this.status
   });
 
   factory AttendanceModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,7 @@ class AttendanceModel {
       title: json['program']['title'],
       description: json['program']['description'],
       startDate: json['program']['startdate'],
+      status: json['status']['name']
     );
   }
 }

@@ -6,3 +6,11 @@ abstract class ProgramsEvent extends Equatable {
 }
 
 class LoadPrograms extends ProgramsEvent {}
+
+class LoadControllerPrograms extends ProgramsEvent {
+  String controllerId;
+  LoadControllerPrograms({required this.controllerId});
+
+  @override
+  List<Object?> get props => [controllerId];
+}

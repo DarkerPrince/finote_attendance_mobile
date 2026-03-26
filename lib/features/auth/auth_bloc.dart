@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:finote_program/Models/UserModel.dart';
+import 'package:finote_program/utils/userUtils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       final response = await http.post(
-        Uri.parse(baseUrl),
+        Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': event.email,
@@ -37,12 +38,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final token = data['token'];
         final userID = data['user']['id'] ?? event.email;
         final user = UserModel.fromJson(data['user']);
+        final savedUser = await loadUserToLocal(user);
 
         // Save token locally for future API requests
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('userId', userID);
+
 
         emit(AuthAuthenticated(user));
       } else {
