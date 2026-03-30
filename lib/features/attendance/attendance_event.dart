@@ -29,14 +29,27 @@ class LoadProgramAttendanceActionTakenListUsers extends AttendanceEvent {
   List<Object?> get props => [programId];
 }
 
+class UpdateProgramAttendance extends AttendanceEvent {
+  String? programId;
+  String? userId;
+  String? statusId;
+
+  UpdateProgramAttendance({required this.programId,required this.userId,required this.statusId});
+  @override
+  List<Object?> get props => [programId];
+}
+
+
+
 class setAttendanceProgram extends AttendanceEvent {
   List<String> users;
   String programId;
   String statusId;
   String permissionReason;
   String controllerId;
+  String programDate;
 
-  setAttendanceProgram({required this.users,required this.programId,required this.statusId,required this.permissionReason, required this.controllerId});
+  setAttendanceProgram({required this.users,required this.programId,required this.statusId,required this.permissionReason, required this.controllerId,required this.programDate});
   @override
-  List<Object?> get props => [users,programId,statusId,permissionReason,controllerId];
+  List<Object?> get props => [users,programId,statusId,permissionReason,controllerId,programDate];
 }

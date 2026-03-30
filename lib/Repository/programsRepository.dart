@@ -1,12 +1,12 @@
 
 import 'dart:convert';
+import 'package:finote_program/Constants/StringConstants.dart';
 import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProgramsRepository {
-  String baseUrl;
-  ProgramsRepository({required this.baseUrl});
+  ProgramsRepository();
   // Fetch attendance list from API
   Future<List<ProgramModel>> fetchPrograms() async {
     final url = Uri.parse('$baseUrl/programs');

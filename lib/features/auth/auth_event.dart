@@ -17,4 +17,15 @@ class LoginRequested extends AuthEvent {
   List<Object?> get props => [email, password];
 }
 
+class SignupRequested extends AuthEvent {
+  final String email;
+  final String password;
+
+  SignupRequested({required this.email, required this.password});
+
+
+  @override
+  List<Object?> get props => [email, password];
+}
+
 class LogoutRequested extends AuthEvent {}

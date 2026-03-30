@@ -24,7 +24,8 @@ class _ProgramsPageState extends State<ProgramsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Programs Page")),
+      appBar: AppBar(title: Text("Programs Page",style: TextStyle(color: Colors.blue)) ,elevation: 2,shadowColor: Colors.blueAccent.withOpacity(0.2), backgroundColor: Colors.white,),
+      backgroundColor: Colors.white,
       body: BlocBuilder<ProgramsBloc, ProgramsState>(
         builder: (context, state) {
           if (state is ProgramsLoading) {

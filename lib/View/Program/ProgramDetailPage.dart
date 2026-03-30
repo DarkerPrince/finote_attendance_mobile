@@ -1,4 +1,5 @@
 import 'package:finote_program/Models/ProgramModel.dart';
+import 'package:finote_program/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
 
 class ProgramDetailPage extends StatelessWidget {
@@ -20,9 +21,32 @@ class ProgramDetailPage extends StatelessWidget {
             expandedHeight: 250,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                "https://images.squarespace-cdn.com/content/v1/5759a0b362cd94a47d9c6242/1465498218086-IO3IIO7FP8QBHL6N585H/slide3.jpg?format=1500w",
-                fit: BoxFit.cover,
+              title: Text(program.title,style: TextStyle(fontSize: 14),),
+              centerTitle: false,
+              titlePadding: EdgeInsets.all(12),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: program.id,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Image.network(
+                        program.image_url!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -38,13 +62,13 @@ class ProgramDetailPage extends StatelessWidget {
                   // 📅 Meta Info
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 14),
+                      Icon(Icons.calendar_today,color: Colors.blueAccent, size: 14),
                       SizedBox(width: 6),
-                      Text(program.startDate, style: TextStyle(color: Colors.grey)),
+                      Text(formatDate(program.startDate), style: TextStyle(color: Colors.grey)),
                       SizedBox(width: 16),
-                      Icon(Icons.person, size: 14),
+                      Icon(Icons.person,color: Colors.blueAccent, size: 14),
                       SizedBox(width: 6),
-                      Text("By Temert Kefel", style: TextStyle(color: Colors.grey)),
+                      Text("By Finote Tsidk", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
 
@@ -55,6 +79,7 @@ class ProgramDetailPage extends StatelessWidget {
                     program.title,
                     style: TextStyle(
                       fontSize: 20,
+                      color: Colors.blueAccent,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -65,9 +90,9 @@ class ProgramDetailPage extends StatelessWidget {
                   Text(
                     program.description,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       height: 1.5,
-                      color: Colors.grey[800],
+                      color: Colors.grey,
                     ),
                   ),
 
@@ -76,9 +101,9 @@ class ProgramDetailPage extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(onPressed: (){}, icon: Icon(Icons.telegram)),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.facebook)),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.tiktok)),
+                      IconButton(onPressed: (){}, icon: Icon(Icons.telegram,color: Colors.blueAccent)),
+                      IconButton(onPressed: (){}, icon: Icon(Icons.facebook,color: Colors.blueAccent)),
+                      IconButton(onPressed: (){}, icon: Icon(Icons.tiktok,color: Colors.blueAccent)),
                     ],
                   )
                 ],

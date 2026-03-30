@@ -6,9 +6,10 @@ class UserModel {
   final List<dynamic>? role;
   final Map<String,dynamic>? department;
   final Map<String,dynamic>? className;
-  final String? bio;
+  final String? chr_name;
   // final String? image;
   final String? lastAttendance;
+
 
   UserModel({
     required this.id,
@@ -18,9 +19,9 @@ class UserModel {
     this.role,
     this.department,
     this.className,
-    this.bio,
+    this.chr_name,
     // this.image,
-    this.lastAttendance,
+    this.lastAttendance
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -32,9 +33,10 @@ class UserModel {
       role: json['roles']??[],
       department: json['department']??{},
       className: json['class']??{},
-      bio: json['bio']??"",
+      chr_name: json['chr_name']??"",
       // image: json['image']??'',
       lastAttendance: json['lastAttendance']??'',
+
     );
   }
 
@@ -48,7 +50,7 @@ class UserModel {
       'roles': role,
       'department': department,
       'class': className,
-      'bio': bio,
+      'chr_name': chr_name,
       // 'image': image,
       'lastAttendance': lastAttendance,
     };

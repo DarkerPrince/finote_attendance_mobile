@@ -1,11 +1,12 @@
 import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:finote_program/View/ControllersPage/ControllerAttendancePage.dart';
+import 'package:finote_program/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
 
-class ProgramCard extends StatelessWidget {
+class ControllerProgramCard extends StatelessWidget {
   ProgramModel program;
 
-  ProgramCard({
+  ControllerProgramCard({
     super.key,
     required this.program,
   });
@@ -17,26 +18,16 @@ class ProgramCard extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(builder: (builder)=>ControllerAttendancePage(program: program)));
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         padding: const EdgeInsets.all(20),
         height: 180,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF4A00E0),
-              Color(0xFF8E2DE2),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: Offset(0, 6),
-            ),
-          ],
+          color: const Color(0xFFF7F9FD),
+          border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(color: Colors.grey.withOpacity(0.2),spreadRadius: 1,blurRadius: 8,blurStyle: BlurStyle.outer)
+            ]
         ),
 
         child: Column(
@@ -47,10 +38,9 @@ class ProgramCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.event, color: Colors.white, size: 28),
+                Icon(Icons.backup_table_sharp, size: 28),
                 Text(
-                  program.startDate,
-                  style: TextStyle(color: Colors.white70),
+                  formatDate(program.startDate),
                 ),
               ],
             ),
@@ -60,9 +50,11 @@ class ProgramCard extends StatelessWidget {
             /// 🔹 TITLE
             Text(
               program.title,
+              maxLines: 1, // how many lines you want
+              overflow: TextOverflow.ellipsis, // adds ...
               style: const TextStyle(
-                color: Colors.white,
                 fontSize: 20,
+                color: Colors.blueAccent,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -72,8 +64,9 @@ class ProgramCard extends StatelessWidget {
             /// 🔹 SUBTITLE
             Text(
               program.description,
+              maxLines: 1, // how many lines you want
+              overflow: TextOverflow.ellipsis, // adds ...
               style: const TextStyle(
-                color: Colors.white70,
                 fontSize: 14,
               ),
             ),
@@ -81,21 +74,20 @@ class ProgramCard extends StatelessWidget {
             const SizedBox(height: 12),
 
             /// 🔹 BOTTOM ROW
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.location_on, color: Colors.white70, size: 16),
+                    Icon(Icons.list_alt, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      "location",
-                      style: TextStyle(color: Colors.white70),
+                      "View Details",
                     ),
                   ],
                 ),
 
-                Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                Icon(Icons.arrow_forward_ios, size: 16),
               ],
             ),
           ],

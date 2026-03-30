@@ -1,3 +1,5 @@
+import 'package:finote_program/View/OnboardingScreen.dart';
+import 'package:finote_program/View/SplashScreen.dart';
 import 'package:finote_program/features/attendance/attendance_bloc.dart';
 import 'package:finote_program/features/programs/program_bloc.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +15,9 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   final userId = prefs.getString('userId') ?? null;
+  final seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
 
-  runApp(MyApp(isLoggedIn: isLoggedIn,userId: userId??"",));
+  runApp(MyApp(isLoggedIn: isLoggedIn,userId: userId??"",seenOnboarding: seenOnboarding,));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,35 +25,37 @@ class MyApp extends StatelessWidget {
 
   final bool isLoggedIn;
   final String userId;
+  final bool seenOnboarding;
 
-  const MyApp({super.key, required this.isLoggedIn, required this.userId});
+
+  const MyApp({super.key, required this.isLoggedIn, required this.userId, required this.seenOnboarding,});
 
   @override
   Widget build(BuildContext context) {
-
-    String baseUrl = "http://192.168.1.10:5001";
-    // String baseUrl = "http://172.20.10.5:5001";
-    // String baseUrl = "http://10.0.2.2:5001";
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(baseUrl: baseUrl),
+          create: (_) => AuthBloc(),
         ),
         BlocProvider<ProgramsBloc>(
-          create: (_) => ProgramsBloc(baseUrl: baseUrl), // load programs immediately
+          create: (_) => ProgramsBloc(), // load programs immediately
         ),
         BlocProvider<AttendanceBloc>(
-          create: (_) => AttendanceBloc(baseUrl: baseUrl), // load programs immediately
+          create: (_) => AttendanceBloc(), // load programs immediately
         ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          useMaterial3: true,
+          primarySwatch: Colors.blue,
+          useMaterial3: false,
         ),
-        home: isLoggedIn ? MyHomePage(userId: userId ) : const AuthPage(),
+        home: !seenOnboarding
+            ? const OnboardingScreen()
+            : (isLoggedIn
+            ? MyHomePage(userId: userId)
+            : const AuthPage()),
       ),
     );
   }

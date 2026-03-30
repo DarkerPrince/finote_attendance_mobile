@@ -1,7 +1,9 @@
+import 'package:finote_program/View/Auth/SignupPage.dart';
 import 'package:finote_program/features/auth/auth_bloc.dart';
 import 'package:finote_program/features/auth/auth_event.dart';
 import 'package:finote_program/features/auth/auth_state.dart';
 import 'package:finote_program/View/HomePage.dart';
+import 'package:finote_program/utils/animationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,12 +18,7 @@ class _AuthPageState extends State<AuthPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  bool isPasswordHidden = true;
 
   void _login() {
     final email = _emailController.text.trim();
@@ -42,56 +39,137 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      backgroundColor: Colors.white,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            // Navigate to home page after login success
-
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => MyHomePage(userId: state.user.id,)),
+                builder: (_) => MyHomePage(userId: state.user.id),
+              ),
             );
           } else if (state is AuthError) {
-            // Show error message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
           }
         },
         builder: (context, state) {
-          if (state is AuthLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          return Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Welcome Back 👋",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    border: OutlineInputBorder(),
+                      const SizedBox(height: 8),
+
+                      const Text(
+                        "Login to continue",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      TextField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: "Email",
+                          prefixIcon: const Icon(Icons.email),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: isPasswordHidden,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(isPasswordHidden
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                isPasswordHidden = !isPasswordHidden;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      state is AuthLoading
+                          ? const CircularProgressIndicator()
+                          : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _login,
+                          style: ElevatedButton.styleFrom(
+
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: Colors.blueAccent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text("Login",style: TextStyle(color: Colors.white),),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Don't have an account? "),
+                          GestureDetector(
+                            onTap: () {
+
+                              Navigator.push(
+                                context,
+                                createRouteAnimation(const SignupPage()),
+                              );
+                            },
+                            child: const Text(
+                              "Sign up",
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _login,
-                  child: const Text("Login"),
-                ),
-              ],
+              ),
             ),
           );
         },

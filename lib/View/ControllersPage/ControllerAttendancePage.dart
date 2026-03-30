@@ -47,25 +47,6 @@ class _ControllerAttendancePageState extends State<ControllerAttendancePage> wit
   }
 
 
-  /// 🔹 Bulk update selected members
-  // void updateSelected(String status) {
-  //   setState(() {
-  //     for (var member in members) {
-  //       if (member.selected) {
-  //         member.status = status;
-  //         member.selected = false;
-  //       }
-  //     }
-  //   });
-  // }
-
-  /// 🔹 Single update
-  // void updateSingle(int index, String status) {
-  //   setState(() {
-  //     members[index].status = status;
-  //   });
-  // }
-
   /// 🔹 Status color helper
   Color getStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -81,53 +62,51 @@ class _ControllerAttendancePageState extends State<ControllerAttendancePage> wit
   }
 
   /// 🔹 Show options for a single member
-  void showStatusOptions(int index) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text("Present"),
-              onTap: () {
-                // updateSingle(index, "Present");
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text("Absent"),
-              onTap: () {
-                // updateSingle(index, "Absent");
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text("By Permission"),
-              onTap: () {
-                // updateSingle(index, "By Permission");
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void showStatusOptions(int index) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (_) {
+  //       return Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           ListTile(
+  //             title: const Text("Present"),
+  //             onTap: () {
+  //               // updateSingle(index, "Present");
+  //               Navigator.pop(context);
+  //             },
+  //           ),
+  //           ListTile(
+  //             title: const Text("Absent"),
+  //             onTap: () {
+  //               // updateSingle(index, "Absent");
+  //               Navigator.pop(context);
+  //             },
+  //           ),
+  //           ListTile(
+  //             title: const Text("By Permission"),
+  //             onTap: () {
+  //               // updateSingle(index, "By Permission");
+  //               Navigator.pop(context);
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
-  int selectedCount=0;
+  // int selectedCount=0;
 
   @override
   Widget build(BuildContext context) {
-    // Count selected members for bulk actions
-    // int selectedCount = members.where((m) => m.selected).length;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Attendance"),
         bottom: TabBar(
             controller: _tabController,
-            tabs: [
+            tabs: const [
               Tab(text: "All"),
               Tab(text: "Present")
              ]),

@@ -27,7 +27,8 @@ class _ControllersPageState extends State<ControllersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Programs List Page")),
+      appBar: AppBar(title: const Text("Program Lists"),elevation: 2,),
+      backgroundColor: Color(0xFFF9F9F9),
       body: BlocBuilder<ProgramsBloc, ProgramsState>(
         builder: (context , state){
           if(state is ProgramsLoading){
@@ -38,7 +39,7 @@ class _ControllersPageState extends State<ControllersPage> {
               itemCount: state.programs.length,
               itemBuilder: (context, index)  {
                 ProgramModel program = state.programs[index];
-                return ProgramCard(program: program,);
+                return ControllerProgramCard(program: program,);
             },);
           }
           

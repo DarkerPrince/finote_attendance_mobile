@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
 /// 🔹 Raw Attendance Page
 class RawAttendanceListPage extends StatefulWidget {
   final ProgramModel program;
@@ -18,6 +20,12 @@ class RawAttendanceListPage extends StatefulWidget {
 }
 
 class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
+
+  String PRESENT_ID = "2549bf8f-8bfb-48ba-9fc0-ec606472c6a2";
+  String ABSENT_ID = "02a27517-b5ab-4e9d-a6cb-89de56a6c03a";
+  String BYPERMISSION_ID = "40d11aab-f71a-470a-abfd-4c620b895f0e";
+
+
   /// Selected user IDs
   Set<String> selectedAttendanceUser = {};
 
@@ -43,37 +51,6 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
     }
   }
 
-  /// 🔹 Show status options for single user
-  void showStatusOptions(int index) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text("Present"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text("Absent"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text("By Permission"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   /// 🔹 Toggle user selection
   void toggleSelection(String memberId) {
@@ -100,7 +77,8 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
       statusId: status,
       permissionReason: "Permission Reason",
       programId: widget.program.id,
-      controllerId: userMap!.id
+      controllerId: userMap!.id,
+      programDate: widget.program.startDate
     ));
 
     setState(() {
@@ -144,7 +122,7 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
                   itemCount: usersList.length,
                   itemBuilder: (context, index) {
                     final member = usersList[index];
-                    return userAttendanceCard(member, index);
+                    return userAttendanceCard(member.user, index);
                   },
                 ),
               ),
@@ -161,29 +139,41 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
   Widget bulkActionsButtons() {
     final isEnabled = selectedAttendanceUser.isNotEmpty;
 
-    return Padding(
+    return isEnabled?Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
             onPressed: isEnabled ? () => bulkAction("2549bf8f-8bfb-48ba-9fc0-ec606472c6a2",false) : null,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text("Present"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green ,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // smaller = less rounded
+              ),
+            ),
+            child: const Text("Present" ,style: TextStyle(color: Colors.white),),
           ),
           ElevatedButton(
             onPressed: isEnabled ? () => bulkAction("02a27517-b5ab-4e9d-a6cb-89de56a6c03a",false) : null,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Absent"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // smaller = less rounded
+              ),
+            ),
+            child: const Text("Absent",style: TextStyle(color: Colors.white),),
           ),
           ElevatedButton(
             onPressed: isEnabled ? () => bulkAction("40d11aab-f71a-470a-abfd-4c620b895f0e",true) : null,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text("Permission"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // smaller = less rounded
+              ),
+            ),
+            child: Text("Permission",style: TextStyle(color: isEnabled ? Colors.black:Colors.white),),
           ),
         ],
       ),
-    );
+    ):Container();
   }
 
   /// 🔹 Check if user is selected
@@ -196,44 +186,39 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
       return const SizedBox.shrink(); // hidden
     }
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
+        color: checkIfUserIsSelected(member.id)
+            ? Colors.blueAccent.withOpacity(0.2)
+            : Colors.white,
+        border: Border.all(color: Colors.grey.shade400)
       ),
-      elevation: 3,
-      color: checkIfUserIsSelected(member.id)
-          ? Colors.blue.withOpacity(0.08)
-          : Colors.white,
       child: ListTile(
+        dense: true,
         onLongPress: () => toggleSelection(member.id),
-        onTap: () {
-          if (selectedAttendanceUser.isNotEmpty) {
-            toggleSelection(member.id);
-          } else {
-            showStatusOptions(index);
-          }
-        },
+        onTap: () => toggleSelection(member.id),
         leading: Checkbox(
           value: checkIfUserIsSelected(member.id),
           onChanged: (_) => toggleSelection(member.id),
         ),
-        title: Text(member.name),
-        subtitle: Text(member.email),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: getStatusColor("Present").withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            'status', // TODO: Replace with actual member status
-            style: TextStyle(
-              color: getStatusColor("Present"),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        title: Text(member.name ,style: TextStyle(fontSize: 16 , fontWeight: FontWeight.w500),),
+        subtitle: Text(member.email==''?"email@finote1619.com":member.email),
+        // trailing: Container(
+        //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        //   decoration: BoxDecoration(
+        //     color: getStatusColor("Present").withOpacity(0.2),
+        //     borderRadius: BorderRadius.circular(10),
+        //   ),
+        //   child: Text(
+        //     'status', // TODO: Replace with actual member status
+        //     style: TextStyle(
+        //       color: getStatusColor("Present"),
+        //       fontWeight: FontWeight.bold,
+        //     ),
+        //   ),
+        // ),
       ),
     );
   }

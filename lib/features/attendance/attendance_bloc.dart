@@ -1,22 +1,20 @@
+import 'package:finote_program/Models/AttendanceUserModel.dart';
 import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/Repository/attendanceRepository.dart';
-import 'package:finote_program/Repository/programsRepository.dart';
 import 'package:finote_program/features/attendance/attendance_event.dart';
 import 'package:finote_program/features/attendance/attendance_state.dart';
-import 'package:finote_program/features/programs/program_event.dart';
-import 'package:finote_program/features/programs/program_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
-  String baseUrl;
 
-  AttendanceBloc({required this.baseUrl}) : super(AttendanceInitial()) {
+
+  AttendanceBloc() : super(AttendanceInitial()) {
     on<LoadAttendance>(_onLoadAttendance);
     on<setAttendanceProgram>(_setAttendanceForProgram);
     on<LoadProgramAttendanceListUsers>(_onLoadProgramUsersAttendance);
     on<LoadProgramAttendanceActionTakenListUsers>(_onLoadProgramUsersActionTakenAttendance);
-
+    // on<UpdateProgramAttendance>(_onupdateAttendance);
   }
 
   Future<void> _onLoadAttendance(
@@ -25,7 +23,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('userId') ?? '';
-      final attendance = await AttendanceRepository(baseUrl: baseUrl).fetchAttendance(userId);
+      final attendance = await AttendanceRepository().fetchAttendance(userId);
       emit(AttendanceLoaded(attendance));
     } catch (e) {
       emit(AttendanceError("Failed to fetch programs"));
@@ -37,7 +35,8 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     emit(AttendanceLoading());
     try {
       print(event.programId);
-      final attendance = await AttendanceRepository(baseUrl: baseUrl).fetchProgramAttendanceUsersList(event.programId);
+
+      final attendance = await AttendanceRepository().fetchProgramAttendanceUsersList(event.programId);
 
       emit(AttendanceLoaded_ProgramUsersList(attendance));
     } catch (e) {
@@ -51,7 +50,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     emit(AttendanceLoading());
     try {
       print(event.programId);
-      final attendance = await AttendanceRepository(baseUrl: baseUrl).fetchProgramActionTakenAttendanceUsersList(event.programId);
+      final attendance = await AttendanceRepository().fetchProgramActionTakenAttendanceUsersList(event.programId);
 
       emit(AttendanceLoaded_ProgramUsersList(attendance));
     } catch (e) {
@@ -65,34 +64,31 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   Future<void> _setAttendanceForProgram(
       setAttendanceProgram event, Emitter<AttendanceState> emit) async {
 
-    print("Set Attendance Methid is not event Outputting $state");
-    // final oreviousState = state;
-    // emit(AttendanceLoading());
-
     try {
-      // Call API
-      await AttendanceRepository(baseUrl: baseUrl).addAttendanceSystem(
+      await AttendanceRepository().addAttendanceSystem(
         event.programId,
         event.controllerId,
         event.statusId,
         event.users,
         event.permissionReason,
+        event.programDate
       );
 
-      // Get current users from state
-      List<UserModel> currentUsers = [];
+      List<AttendanceUserModel> currentUsers = [];
+
       if (state is AttendanceLoaded_ProgramUsersList) {
-        print("Output Model is now $state");
-        currentUsers = List.from((state as AttendanceLoaded_ProgramUsersList).usersList);
+        currentUsers = List.from(
+          (state as AttendanceLoaded_ProgramUsersList).usersList,
+        );
       }
 
-      // Mark updated users as hidden/completed
-      currentUsers.removeWhere((user) => event.users.contains(user.id));
+      /// ✅ OPTION 1: REMOVE updated users (your current behavior)
+      currentUsers.removeWhere(
+            (item) => event.users.contains(item.user.id),
+      );
 
-
-
-      // Emit the updated list without fetching again
       emit(AttendanceLoaded_ProgramUsersList(currentUsers));
+
     } catch (e) {
       emit(AttendanceError("Failed to update attendance: $e"));
     }

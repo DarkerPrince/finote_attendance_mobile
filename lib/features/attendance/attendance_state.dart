@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:finote_program/Models/AttendanceModel.dart';
+import 'package:finote_program/Models/AttendanceUserModel.dart';
 import 'package:finote_program/Models/UserModel.dart';
 
 abstract class AttendanceState extends Equatable {
@@ -27,7 +28,7 @@ class AttendanceError extends AttendanceState {
 
 
 class AttendanceLoaded_ProgramUsersList extends AttendanceState {
-  final List<UserModel> usersList;
+  final List<AttendanceUserModel> usersList;
   AttendanceLoaded_ProgramUsersList(this.usersList);
 
   @override

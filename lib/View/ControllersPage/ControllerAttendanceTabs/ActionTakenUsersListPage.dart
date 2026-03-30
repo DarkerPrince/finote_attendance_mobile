@@ -1,3 +1,4 @@
+import 'package:finote_program/Models/AttendanceUserModel.dart';
 import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/View/Program/ProgramDetailPage.dart';
@@ -19,7 +20,7 @@ class ActionTakenUsersListPage extends StatefulWidget {
 
 class _ActionTakenUsersListPageState extends State<ActionTakenUsersListPage> {
   // Store selected user IDs
-  // Set<String> selectedAttendanceUser = {};
+ late String selectedAttendanceUser ;
 
   @override
   void initState() {
@@ -43,7 +44,7 @@ class _ActionTakenUsersListPageState extends State<ActionTakenUsersListPage> {
   }
 
   /// 🔹 Show options for a single member
-  void showStatusOptions(int index) {
+  void showStatusOptions(int index, String UserID ) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -78,9 +79,9 @@ class _ActionTakenUsersListPageState extends State<ActionTakenUsersListPage> {
   }
 
   /// 🔹 Check if user is selected
-  // bool checkIfUserIsSelected(String memberId) {
-  //   return selectedAttendanceUser.contains(memberId);
-  // }
+  bool checkIfUserIsSelected(String memberId) {
+    return selectedAttendanceUser.contains(memberId);
+  }
 
   /// 🔹 Toggle selection
   // void toggleSelection(String memberId) {
@@ -129,7 +130,7 @@ class _ActionTakenUsersListPageState extends State<ActionTakenUsersListPage> {
   }
 
   /// 🔹 Single User Card
-  Widget usersAttendanceCard(UserModel member, int index) {
+  Widget usersAttendanceCard(AttendanceUserModel member, int index) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(
@@ -137,7 +138,7 @@ class _ActionTakenUsersListPageState extends State<ActionTakenUsersListPage> {
       ),
       elevation: 3,
       child: ListTile(
-        // onLongPress: () => toggleSelection(member.id),
+        onLongPress: () => showStatusOptions(index , member.user.id),
         // onTap: () {
         //   if (selectedAttendanceUser.isNotEmpty) {
         //     toggleSelection(member.id);
@@ -145,18 +146,18 @@ class _ActionTakenUsersListPageState extends State<ActionTakenUsersListPage> {
         //     showStatusOptions(index);
         //   }
         // },
-        title: Text(member.name),
-        subtitle: Text(member.email),
+        title: Text(member.user.name),
+        subtitle: Text(member.user.email),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: getStatusColor("Present").withOpacity(0.2),
+            color: getStatusColor(member.status).withOpacity(0.2),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
-            'status', // TODO: Replace with actual member status
+            member.status, // TODO: Replace with actual member status
             style: TextStyle(
-              color: getStatusColor("Present"),
+              color: getStatusColor(member.status),
               fontWeight: FontWeight.bold,
             ),
           ),

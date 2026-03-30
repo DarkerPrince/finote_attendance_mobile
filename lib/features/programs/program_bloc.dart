@@ -4,9 +4,8 @@ import 'package:finote_program/features/programs/program_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProgramsBloc extends Bloc<ProgramsEvent, ProgramsState> {
-  String baseUrl;
 
-  ProgramsBloc({required this.baseUrl}) : super(ProgramsInitial()) {
+  ProgramsBloc() : super(ProgramsInitial()) {
     on<LoadPrograms>(_onLoadPrograms);
     on<LoadControllerPrograms>(_onLoadControllersPrograms);
   }
@@ -15,7 +14,7 @@ class ProgramsBloc extends Bloc<ProgramsEvent, ProgramsState> {
       LoadPrograms event, Emitter<ProgramsState> emit) async {
     emit(ProgramsLoading());
     try {
-      final programs = await ProgramsRepository(baseUrl: baseUrl).fetchPrograms();
+      final programs = await ProgramsRepository().fetchPrograms();
       emit(ProgramsLoaded(programs));
     } catch (e) {
       emit(ProgramsError("Failed to fetch programs"));
@@ -26,7 +25,7 @@ class ProgramsBloc extends Bloc<ProgramsEvent, ProgramsState> {
       LoadControllerPrograms event, Emitter<ProgramsState> emit) async {
     emit(ProgramsLoading());
     try {
-      final programs = await ProgramsRepository(baseUrl: baseUrl).fetchControllerProgramsRepository(event.controllerId);
+      final programs = await ProgramsRepository().fetchControllerProgramsRepository(event.controllerId);
       emit(ProgramsLoaded(programs));
     } catch (e) {
       emit(ProgramsError("Failed to fetch programs"));

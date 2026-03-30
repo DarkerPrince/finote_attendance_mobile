@@ -26,8 +26,11 @@ class _AttendancepageState extends State<Attendancepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Attendance Details"),
+        title: Text("My Attendance",style: TextStyle(color: Colors.blueAccent),),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
       body: BlocBuilder<AttendanceBloc, AttendanceState>(// number of date groups
           builder: (context, state) {

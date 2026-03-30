@@ -1,14 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
+
+import 'package:finote_program/Constants/StringConstants.dart';
 import 'package:finote_program/Models/AttendanceModel.dart';
-import 'package:finote_program/Models/ProgramModel.dart';
+import 'package:finote_program/Models/AttendanceUserModel.dart';
 import 'package:finote_program/Models/UserModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class AttendanceRepository {
-  String baseUrl;
-  AttendanceRepository({required this.baseUrl});
 
   Future<List<GroupAttendanceModel>> fetchAttendance(String userID) async {
     final url = Uri.parse("$baseUrl/users/attendance-personal/$userID");
@@ -39,12 +38,13 @@ class AttendanceRepository {
     }
   }
 
-  Future<List<UserModel>> addAttendanceSystem(
+  Future<List<AttendanceUserModel>> addAttendanceSystem(
       String programId,
       String controllerId,
       String statusId,
       List<String> membersId, // list of user IDs for bulk
       String? permissionReason,
+      String? attendanceProgramDate
       ) async
   {
 
@@ -58,11 +58,13 @@ class AttendanceRepository {
       'controller_id': controllerId,
       'program_id': programId,
       'status_id': statusId,
-      'createdat': DateTime.now().toIso8601String(),
+      'createdat': attendanceProgramDate,
       'updatedat': DateTime.now().toIso8601String(),
       'user_id': membersId, // bulk list
       'permission_reason': permissionReason ?? "",
     };
+
+    print("\n\n\n add Attendance Request Payload: ${attendanceData} \n\n\n");
 
     final response = await http.post(
       url,
@@ -74,15 +76,15 @@ class AttendanceRepository {
     );
 
     // print("TOKEN USED: $token");
-    print("RESPONSE: ${response.body}");
+    print("add Attendance RESPONSE: ${response.body}");
 
-    List<UserModel> attendanceUsersList = await fetchProgramAttendanceUsersList(programId);
+    List<AttendanceUserModel> attendanceUsersList = await fetchProgramAttendanceUsersList(programId);
     // final List<dynamic> jsonData = json.decode(response.body);
     print("JSON DATA ____ $attendanceUsersList");
     return attendanceUsersList;
   }
 
-  Future<List<UserModel>> fetchProgramAttendanceUsersList(programId) async {
+  Future<List<AttendanceUserModel>> fetchProgramAttendanceUsersList(programId) async {
     final url = Uri.parse("$baseUrl/programs/$programId");
 
     // 🔑 Get token from storage
@@ -106,9 +108,18 @@ class AttendanceRepository {
     print(" ========= \n Fetch Program Attendance UsersList \n $usersList \n ========== \n\n\n");
 
     if (response.statusCode == 200) {
-      final List<UserModel> attendanceUsersList = (usersList ?? [])
-          .map<UserModel>((user) => UserModel.fromJson(user))
-          .toList();
+      final List<AttendanceUserModel> attendanceUsersList =
+      usersList.map<AttendanceUserModel>((user) {
+
+        return AttendanceUserModel(
+          user: UserModel.fromJson(user),
+          /// ✅ DEFAULT VALUES (your requirement)
+          status: "Not Set",
+          color: "#9E9E9E",
+          // grey
+        );
+
+      }).toList();
       print(" ========= \n Fetch Program Attendance - JSONDATA $jsonData \n ========== \n\n\n");
 
       return attendanceUsersList;
@@ -117,10 +128,9 @@ class AttendanceRepository {
     }
   }
 
-  Future<List<UserModel>> fetchProgramActionTakenAttendanceUsersList(programId) async {
+  Future<List<AttendanceUserModel>> fetchProgramActionTakenAttendanceUsersList(programId) async {
     final url = Uri.parse("$baseUrl/programs/attendance/$programId");
 
-    // 🔑 Get token from storage
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
@@ -128,21 +138,15 @@ class AttendanceRepository {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // ✅ ADD TOKEN HERE
+        'Authorization': 'Bearer $token',
       },
     );
 
-    print(url);
-    print("TOKEN USED: $token");
-    print("RESPONSE: ${response.body}");
-    final Map<String,dynamic> jsonData = json.decode(response.body);
-    final List<dynamic> usersList = jsonData['users']??[];
-    print(" ====###===== \n\n\n Action taken For User Detail $usersList \n\n\n\ ========== \n\n\n");
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    final List<dynamic> usersList = jsonData['users'] ?? [];
 
-    final List<UserModel> attendanceUsersList = (usersList ?? [])
-        .map<UserModel>((user) => UserModel.fromJson(user['user']))
-        .toList();
-    print(" ========= \n\n\n Action Taken For JSON DATA $jsonData \n\n\n\ ========== \n\n\n");
+    final List<AttendanceUserModel> attendanceUsersList =
+    usersList.map((item) => AttendanceUserModel.fromJson(item)).toList();
 
     return attendanceUsersList;
   }

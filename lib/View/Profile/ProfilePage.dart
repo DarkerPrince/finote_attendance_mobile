@@ -34,6 +34,72 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  Future<void> _handleLogout() async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Logout"),
+        content: const Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Logout"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken');
+    await prefs.remove('user');
+    await prefs.setBool('isLoggedIn', false);
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const AuthPage()),
+    );
+  }
+
+  bool isUserAdminOrController(UserModel user){
+    return (user.role ?? []).any((role) {
+      final title = (role['title'] ?? '').toLowerCase();
+      return title == 'admin' || title == 'controller';
+    });
+  }
+
+  Widget ProgramManagementButton(UserModel user){
+    if (!isUserAdminOrController(user)) return const SizedBox(); // hide completely
+
+    return Card(
+      shadowColor: Colors.blueAccent.withOpacity(0.4),
+      elevation: 4,
+      shape: Border.all(color: Colors.blueAccent),
+      child: ListTile(
+        leading: const Icon(Icons.list_alt, color: Colors.blueAccent),
+        title: const Text(
+          "Program Management",
+          style: TextStyle(color: Colors.blueAccent),
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ControllersPage(userId: user.id),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -68,82 +134,119 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = localUser!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
+      appBar: AppBar(
+        title: const Text("Profile"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _handleLogout,
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             const CircleAvatar(
               radius: 50,
-              child: Icon(Icons.person),
+              child: Icon(Icons.person ,color: Colors.white,size: 40,),
+              backgroundColor: Colors.blueAccent,
             ),
             const SizedBox(height: 16),
             Text(user.name,
                 style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold)),
+                    fontSize: 22, fontWeight: FontWeight.bold ,color: Colors.blueGrey,)),
             const SizedBox(height: 4),
-            Text(user.email,
+            Text(user.chr_name??"Baptism Name",
                 style: TextStyle(fontSize: 14, color: Colors.grey[600])),
             const SizedBox(height: 12),
-            Text(user.bio ?? "No bio available", textAlign: TextAlign.center),
-            const SizedBox(height: 20),
+            // Text(user.bio ?? "No bio available", textAlign: TextAlign.center),
+            // const SizedBox(height: 20),
+            const Divider(),
             ListTile(
-              leading: const Icon(Icons.calendar_month_rounded),
-              title: Text(user.lastAttendance ?? "N/A"),
-              subtitle: const Text("Last Attended"),
+              leading: const Icon(Icons.calendar_month_rounded,color: Colors.blueGrey,),
+              title: Text(user.className?['title'] ?? "N/A"),
+              subtitle: const Text("Last Attendance"),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.class_),
+              leading: const Icon(Icons.class_,color: Colors.blueGrey,),
               title: Text(user.className?['title'] ?? "N/A"),
               subtitle: const Text("Class"),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.house_rounded),
+              leading: const Icon(Icons.house_rounded,color: Colors.blueGrey,),
               title: Text(user.department?['title'] ?? "N/A"),
               subtitle: const Text("Department"),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.phone),
+              leading: const Icon(Icons.phone,color: Colors.blueGrey,),
               title: Text(user.phone ?? "N/A"),
               subtitle: const Text("Phone Number"),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.admin_panel_settings),
-              title: Text(user.role?[0]['title'] ?? "N/A"),
-              subtitle: const Text("Role"),
+              leading: const Icon(Icons.email,color: Colors.blueGrey,),
+              title: Text(user.email ?? "N/A"),
+              subtitle: const Text("Email"),
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.list_alt),
-              title: const Text("Controlling Programs"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ControllersPage(userId: user.id)),
+            isUserAdminOrController(user)?ListTile(
+              leading: const Icon(
+                Icons.admin_panel_settings,
+                color: Colors.blueGrey,
+              ),
+              title: Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: (user.role ?? []).map<Widget>((role) {
+                return Chip(
+                  padding: EdgeInsets.all(1),
+
+                  label: Text(role['title'] ?? "N/A"),
+                  backgroundColor: Colors.blueGrey.shade50,
                 );
-              },
+              }).toList(),
             ),
+            ):Container(),
+            ProgramManagementButton(user),
+
+            // Card(
+            //   shadowColor: Colors.blueAccent.withOpacity(0.4),
+            //   elevation: 4,
+            //   borderOnForeground: true,
+            //   shape: Border.all(color: Colors.blueAccent),
+            //
+            //   child: ListTile(
+            //     leading: const Icon(Icons.list_alt,color: Colors.blueAccent,),
+            //     title: const Text("Program Management", style: TextStyle(color: Colors.blueAccent),),
+            //     onTap: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (_) => ControllersPage(userId: user.id)),
+            //       );
+            //     },
+            //   ),
+            // ),
             const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () async {
-                // await clearUserLocally();
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.remove('authToken');
-                await prefs.remove('user');
-                await prefs.setBool('isLoggedIn', false);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AuthPage()),
-                );
-              },
-              icon: const Icon(Icons.logout),
-              label: const Text("Logout"),
-            ),
+            // ElevatedButton.icon(
+            //   onPressed: () async {
+            //     // await clearUserLocally();
+            //     final prefs = await SharedPreferences.getInstance();
+            //     await prefs.remove('authToken');
+            //     await prefs.remove('user');
+            //     await prefs.setBool('isLoggedIn', false);
+            //     Navigator.pushReplacement(
+            //       context,
+            //       MaterialPageRoute(builder: (_) => const AuthPage()),
+            //     );
+            //   },
+            //   icon: const Icon(Icons.logout),
+            //   label: const Text("Logout"),
+            // ),
           ],
         ),
       ),
