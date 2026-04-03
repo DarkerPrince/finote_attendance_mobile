@@ -32,10 +32,10 @@ class ProgramDetailPage extends StatelessWidget {
                     tag: program.id,
                     child: Material(
                       color: Colors.transparent,
-                      child: Image.network(
+                      child:  program.image_url != null ? Image.network(
                         program.image_url!,
                         fit: BoxFit.cover,
-                      ),
+                      ):Image.asset('assets/placeholder/placeholder.jpg', fit: BoxFit.cover,),
                     ),
                   ),
                   Container(
@@ -65,7 +65,7 @@ class ProgramDetailPage extends StatelessWidget {
                     children: [
                       Icon(Icons.calendar_today,color: Colors.blueAccent, size: 14),
                       SizedBox(width: 6),
-                      Text(formatDate(program.startDate.toString()), style: TextStyle(color: Colors.grey)),
+                      Text(program.startDate.toString(), style: TextStyle(color: Colors.grey)),
                       SizedBox(width: 16),
                       Icon(Icons.person,color: Colors.blueAccent, size: 14),
                       SizedBox(width: 6),

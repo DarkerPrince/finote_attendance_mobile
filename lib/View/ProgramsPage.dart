@@ -1,4 +1,5 @@
 import 'package:finote_program/View/Program/ProgramCard.dart';
+import 'package:finote_program/View/Program/ProgramCardShimmer.dart';
 import 'package:finote_program/features/programs/program_bloc.dart';
 import 'package:finote_program/features/programs/program_event.dart';
 import 'package:finote_program/features/programs/program_state.dart';
@@ -30,7 +31,10 @@ class _ProgramsPageState extends State<ProgramsPage> {
       body: BlocBuilder<ProgramsBloc, ProgramsState>(
         builder: (context, state) {
           if (state is ProgramsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) => const ProgramCardShimmer(),
+            );
           } else if (state is ProgramsLoaded) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
