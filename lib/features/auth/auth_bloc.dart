@@ -28,6 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         body: jsonEncode({
           'email': event.email,
           'password': event.password,
+          'platform':'mobile'
         }),
       );
 
@@ -40,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final token = data['token'];
         final userID = data['user']['id'] ?? event.email;
         final user = UserModel.fromJson(data['user']);
-        final savedUser = await loadUserToLocal(user);
+        await loadUserToLocal(user);
         // Save token locally for future API requests
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);

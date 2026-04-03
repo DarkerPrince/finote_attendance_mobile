@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     _pages = [
-      ProgramsPage(),
+      ProgramsPage(userId: widget.userId,),
       Attendancepage(userId: widget.userId),
       ProfilePage()
     ];

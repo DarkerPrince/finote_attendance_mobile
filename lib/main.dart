@@ -3,6 +3,7 @@ import 'package:finote_program/View/SplashScreen.dart';
 import 'package:finote_program/features/attendance/attendance_bloc.dart';
 import 'package:finote_program/features/programs/program_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finote_program/features/auth/auth_bloc.dart';
 import 'package:finote_program/View/HomePage.dart';
@@ -50,6 +51,30 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           useMaterial3: false,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 0,
+
+            // Back button & default icons
+            iconTheme: IconThemeData(
+              color: Colors.blueAccent,
+            ),
+
+            // Action icons (right side)
+            actionsIconTheme: IconThemeData(
+              color: Colors.blueAccent,
+            ),
+
+            // Title text
+            titleTextStyle: TextStyle(
+              color: Colors.blueAccent,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+
+            // Status bar (top icons: battery, time)
+            systemOverlayStyle: SystemUiOverlayStyle.dark,
+          ),
         ),
         home: !seenOnboarding
             ? const OnboardingScreen()

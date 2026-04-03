@@ -1,6 +1,7 @@
 import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:finote_program/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProgramDetailPage extends StatelessWidget {
   final ProgramModel program;
@@ -64,7 +65,7 @@ class ProgramDetailPage extends StatelessWidget {
                     children: [
                       Icon(Icons.calendar_today,color: Colors.blueAccent, size: 14),
                       SizedBox(width: 6),
-                      Text(formatDate(program.startDate), style: TextStyle(color: Colors.grey)),
+                      Text(formatDate(program.startDate.toString()), style: TextStyle(color: Colors.grey)),
                       SizedBox(width: 16),
                       Icon(Icons.person,color: Colors.blueAccent, size: 14),
                       SizedBox(width: 6),
@@ -101,9 +102,11 @@ class ProgramDetailPage extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(onPressed: (){}, icon: Icon(Icons.telegram,color: Colors.blueAccent)),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.facebook,color: Colors.blueAccent)),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.tiktok,color: Colors.blueAccent)),
+                      IconButton(onPressed: ()=>_openSocialLink(program.telegram_link), icon: Icon(Icons.telegram,color: Colors.blueAccent)),
+                      IconButton(onPressed: ()=>_openSocialLink(program.facebook_link), icon: Icon(Icons.facebook,color: Colors.blueAccent)),
+                      IconButton(onPressed: ()=>_openSocialLink(program.tiktok_link), icon: Icon(Icons.tiktok,color: Colors.blueAccent)),
+                      // IconButton(onPressed: ()=>_openSocialLink(program.youtube_link), icon: Icon(Icons.play_circle,color: Colors.blueAccent)),
+                      // IconButton(onPressed: ()=>_openSocialLink(program.instagram_link), icon: Icon(Icons.camera_rounded,color: Colors.blueAccent)),
                     ],
                   )
                 ],
@@ -114,4 +117,15 @@ class ProgramDetailPage extends StatelessWidget {
       ),
     );
   }
+
+
+  Future<void> _openSocialLink(socialUrl) async {
+    final Uri url = Uri.parse(socialUrl);
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch Telegram');
+    }
+  }
+
+
 }

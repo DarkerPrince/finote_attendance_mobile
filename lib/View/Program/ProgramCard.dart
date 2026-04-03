@@ -1,4 +1,5 @@
 import 'package:finote_program/Models/ProgramModel.dart';
+import 'package:finote_program/View/Program/InfoItem.dart';
 import 'package:finote_program/View/Program/ProgramDetailPage.dart';
 import 'package:finote_program/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
@@ -41,13 +42,13 @@ class Programcard extends StatelessWidget {
                       children: [
                         Container(
                           decoration: BoxDecoration(color: Colors.blueAccent.withOpacity(0.2),borderRadius: BorderRadius.circular(12)),
-                          padding: EdgeInsets.symmetric(vertical: 2,horizontal: 12),
-                          child: const Text(
-                            "በሰንበት ት/ት ቤት",
-                            style: TextStyle(fontSize: 12 ),
+                          padding: EdgeInsets.symmetric(vertical: 2,horizontal: 6),
+                          child: Text(
+                            program.programtype??"Other",
+                            style: TextStyle(fontSize: 12 ,color: Colors.blueAccent ),
                           ),
                         ),
-              const SizedBox(height: 4,),
+                      const SizedBox(height: 4,),
                         Wrap(
                           children: [
                             Text(
@@ -58,6 +59,7 @@ class Programcard extends StatelessWidget {
                             ),
                           ],
                         ),
+                        SizedBox(height: 4,),
                         Wrap(
                           children: [
                             Text(
@@ -68,9 +70,10 @@ class Programcard extends StatelessWidget {
                             ),
                           ],
                         ),
+                        SizedBox(height: 8,),
                         Text(
                           '@finote1619',
-                          style: TextStyle(color: Colors.blueAccent),
+                          style: TextStyle(color: Colors.blueGrey),
                         ),
                         // IconButton(onPressed: () {}, icon: Icon(Icons.bookmark_add))
                       ],
@@ -112,68 +115,41 @@ class Programcard extends StatelessWidget {
               SizedBox(height: 12,),
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  color: Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    /// DATE
-                    Expanded(
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calendar_month_rounded, size: 18),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              formatDate(program.startDate),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Divider(height: 12),
-
-                    /// TIME
-                    Flexible(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.access_time, size: 18),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              "12:30",
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    /// LOCATION
-                    Flexible(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.location_on_outlined, size: 18),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              "አዳራሽ",
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                  color: Colors.white, // cleaner background
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.blueGrey),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
-              )
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    /// DATE
+                    InfoItem(
+                      icon: Icons.calendar_month_rounded,
+                      label: program.startDate??"", // using your ProgramModel helper
+                    ),
+
+                    /// TIME
+                    InfoItem(
+                      icon: Icons.access_time,
+                      label: program.startTime??"",
+                    ),
+
+                    /// LOCATION
+                    InfoItem(
+                      icon: Icons.location_on_outlined,
+                      label: program.location ?? "No location",
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

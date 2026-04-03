@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProgramsPage extends StatefulWidget {
-  const ProgramsPage({super.key});
+  String userId;
+  ProgramsPage({super.key, required this.userId });
 
   @override
   State<ProgramsPage> createState() => _ProgramsPageState();
@@ -16,9 +17,9 @@ class _ProgramsPageState extends State<ProgramsPage> {
   @override
   void initState() {
     super.initState();
-
+    
     // ✅ Trigger the load programs event when page opens
-    context.read<ProgramsBloc>().add(LoadPrograms());
+    context.read<ProgramsBloc>().add(LoadPrograms(userId: widget.userId));
   }
 
   @override

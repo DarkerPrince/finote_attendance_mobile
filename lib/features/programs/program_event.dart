@@ -5,7 +5,10 @@ abstract class ProgramsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadPrograms extends ProgramsEvent {}
+class LoadPrograms extends ProgramsEvent {
+  String userId;
+  LoadPrograms({required this.userId});
+}
 
 class LoadControllerPrograms extends ProgramsEvent {
   String controllerId;

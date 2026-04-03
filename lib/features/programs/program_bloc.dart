@@ -14,9 +14,10 @@ class ProgramsBloc extends Bloc<ProgramsEvent, ProgramsState> {
       LoadPrograms event, Emitter<ProgramsState> emit) async {
     emit(ProgramsLoading());
     try {
-      final programs = await ProgramsRepository().fetchPrograms();
+      final programs = await ProgramsRepository().fetchPrograms(event.userId);
       emit(ProgramsLoaded(programs));
     } catch (e) {
+      print("The Contents for the Personalized Programs error is ${e}");
       emit(ProgramsError("Failed to fetch programs"));
     }
   }

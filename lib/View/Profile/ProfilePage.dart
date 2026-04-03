@@ -4,6 +4,7 @@ import 'package:finote_program/View/ControllersPage/ControllersPage.dart';
 import 'package:finote_program/features/auth/auth_bloc.dart';
 import 'package:finote_program/features/auth/auth_event.dart';
 import 'package:finote_program/features/auth/auth_state.dart';
+import 'package:finote_program/utils/dateUtils.dart';
 import 'package:finote_program/utils/userUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -100,6 +101,19 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+
+
+  int getDaysSince(String date) {
+    try {
+      final lastDate = DateTime.parse(date);
+      final now = DateTime.now();
+
+      return now.difference(lastDate).inDays;
+    } catch (e) {
+      return 999; // fallback (invalid date)
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -132,7 +146,8 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final user = localUser!;
-
+    final daysSince = getDaysSince(user.lastAttendance ?? "2000-01-01");
+    final isWarning = daysSince > 15;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
@@ -164,9 +179,25 @@ class _ProfilePageState extends State<ProfilePage> {
             // const SizedBox(height: 20),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.calendar_month_rounded,color: Colors.blueGrey,),
-              title: Text(user.className?['title'] ?? "N/A"),
-              subtitle: const Text("Last Attendance"),
+              leading: Icon(
+                Icons.calendar_month_rounded,
+                color: isWarning ? Colors.red : Colors.blueGrey,
+              ),
+              title: Text(
+                formatDate(user.lastAttendance ?? "2000-01-01"),
+                style: TextStyle(
+                  color: isWarning ? Colors.red : Colors.black,
+                  fontWeight: isWarning ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              subtitle: Text(
+                isWarning
+                    ? "⚠️ Last attendance was $daysSince days ago"
+                    : "Last Attendance Date",
+                style: TextStyle(
+                  color: isWarning ? Colors.red : Colors.grey,
+                ),
+              ),
             ),
             const Divider(),
             ListTile(

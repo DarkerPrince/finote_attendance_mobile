@@ -35,10 +35,11 @@ class UserModel {
       className: json['class']??{},
       chr_name: json['chr_name']??"",
       // image: json['image']??'',
-      lastAttendance: json['lastAttendance']??'',
+      lastAttendance: json['last_attendance'],
 
     );
   }
+
 
   // toJson method
   Map<String, dynamic> toJson() {
@@ -52,7 +53,7 @@ class UserModel {
       'class': className,
       'chr_name': chr_name,
       // 'image': image,
-      'lastAttendance': lastAttendance,
+      'last_attendance': lastAttendance,
     };
   }
 }

@@ -5,7 +5,7 @@ String formatDate(String isoDate) {
   DateTime dateTime = DateTime.parse(isoDate);
 
   // Format it to "June 12, 2024"
-  String formatted = DateFormat('MMMM d, y').format(dateTime);
+  String formatted = DateFormat('MMM d').format(dateTime);
 
   return formatted;
 }

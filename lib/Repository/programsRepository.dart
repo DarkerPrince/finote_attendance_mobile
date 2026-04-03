@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProgramsRepository {
   ProgramsRepository();
   // Fetch attendance list from API
-  Future<List<ProgramModel>> fetchPrograms() async {
-    final url = Uri.parse('$baseUrl/programs');
+  Future<List<ProgramModel>> fetchPrograms(String userId) async {
+    final url = Uri.parse('$baseUrl/programs/personalized/$userId');
 
     // 🔑 Get token from storage
     final prefs = await SharedPreferences.getInstance();
@@ -22,11 +22,12 @@ class ProgramsRepository {
         'Authorization': 'Bearer $token', // ✅ ADD TOKEN HERE
       },
     );
-
+    print("GETTING PERSONALIZED PROGRAM URL \n: $url");
     print("TOKEN USED: $token");
     print("RESPONSE: ${response.body}");
 
     if (response.statusCode == 200) {
+      print("Response is 200 so start with that");
       final List jsonData = json.decode(response.body);
 
       return jsonData.map((e) => ProgramModel.fromJson(e)).toList();
