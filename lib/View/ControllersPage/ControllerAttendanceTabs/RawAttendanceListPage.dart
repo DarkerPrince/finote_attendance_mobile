@@ -72,7 +72,7 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
      UserModel? userMap  = await getUserFromLocal();
 
     // TODO: Dispatch your Bloc event here for bulk update
-    context.read<AttendanceBloc>().add(setAttendanceProgram(
+    context.read<AttendanceBloc>().add(SetAttendanceProgram(
       users: selectedAttendanceUser.toList(),
       statusId: status,
       permissionReason: "Permission Reason",

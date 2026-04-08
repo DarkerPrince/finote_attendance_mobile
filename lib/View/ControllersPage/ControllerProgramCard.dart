@@ -40,7 +40,7 @@ class ControllerProgramCard extends StatelessWidget {
               children: [
                 Icon(Icons.backup_table_sharp, size: 28),
                 Text(
-                  formatDate(program.startDate),
+                  program.startDate,
                 ),
               ],
             ),

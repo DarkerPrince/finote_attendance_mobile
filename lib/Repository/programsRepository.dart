@@ -59,7 +59,7 @@ class ProgramsRepository {
       final Map<String,dynamic> jsonData = json.decode(response.body);
       print("the list of Controlled Programs are $jsonData");
       final List controllersPrograms  = jsonData['controllers'];
-      return controllersPrograms.map((e) => ProgramModel.fromJson(e)).toList();
+      return controllersPrograms.map((e) => ProgramModel.fromControllerJson(e)).toList();
     } else {
       throw Exception("Failed to load programs");
     }

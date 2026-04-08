@@ -35,6 +35,7 @@ class ProgramModel {
   });
 
   factory ProgramModel.fromJson(Map<String, dynamic> json) {
+    print("\n\n Parsing ProgramModel from JSON: $json");
 
     final startDateData = json['startdate'] != null
         ? DateTime.parse(json['startdate'])
@@ -57,6 +58,33 @@ class ProgramModel {
       instagram_link: json['instagram_link'],
       location: json['location']['title']??"",
       programtype: json['programtype']['title']??"",
+    );
+  }
+
+  factory ProgramModel.fromControllerJson(Map<String, dynamic> json) {
+    print("\n\n Parsing ProgramModel from JSON: $json");
+
+    final startDateData = json['startdate'] != null
+        ? DateTime.parse(json['startdate'])
+        : DateTime.now();
+
+    final parsedTime  = DateFormat('h:mm a').format(startDateData);
+    final parsedDate = formatDate(startDateData.toString());// fallback (optional)
+
+    return ProgramModel(
+      id: json['id']??"",
+      title: json['title']??"",
+      description: json['description']??"",
+      startDate: parsedDate,
+      startTime: parsedTime,
+      image_url: json['image_url']??"",
+      facebook_link: json['facebook_link']??"",
+      youtube_link: json['youtube_link']??"",
+      tiktok_link: json['tiktok_link']??"",
+      telegram_link: json['telegram_link']??"",
+      instagram_link: json['instagram_link']??"",
+      location: json['location']??"",
+      programtype: json['programtype']??"",
     );
   }
 

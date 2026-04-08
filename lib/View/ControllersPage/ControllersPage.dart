@@ -35,15 +35,17 @@ class _ControllersPageState extends State<ControllersPage> {
             return Center(child: CircularProgressIndicator(),);
           }
           else if (state is ProgramsLoaded){
-            return ListView.builder(
+            return state.programs.isEmpty? Center(child: Text("No Programs Found"),): ListView.builder(
               itemCount: state.programs.length,
               itemBuilder: (context, index)  {
                 ProgramModel program = state.programs[index];
                 return ControllerProgramCard(program: program,);
             },);
+          }else if (state is ProgramsError){
+            return Center(child: Text("Error: ${state.message}"),);
           }
           
-          return Center(child: Text("No Programs Found"),);
+          return Center(child: Text("Error Page"),);
         },
 
       ),

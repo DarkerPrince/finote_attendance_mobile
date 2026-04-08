@@ -5,9 +5,15 @@ abstract class ProgramsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+
 class LoadPrograms extends ProgramsEvent {
-  String userId;
-  LoadPrograms({required this.userId});
+  final String userId;
+  final bool forceRefresh;
+
+  LoadPrograms({required this.userId, this.forceRefresh = false});
+
+  @override
+  List<Object?> get props => [userId, forceRefresh];
 }
 
 class LoadControllerPrograms extends ProgramsEvent {

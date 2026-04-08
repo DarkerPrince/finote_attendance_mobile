@@ -11,7 +11,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
   AttendanceBloc() : super(AttendanceInitial()) {
     on<LoadAttendance>(_onLoadAttendance);
-    on<setAttendanceProgram>(_setAttendanceForProgram);
+    on<SetAttendanceProgram>(_setAttendanceForProgram);
     on<LoadProgramAttendanceListUsers>(_onLoadProgramUsersAttendance);
     on<LoadProgramAttendanceActionTakenListUsers>(_onLoadProgramUsersActionTakenAttendance);
     // on<UpdateProgramAttendance>(_onupdateAttendance);
@@ -62,7 +62,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
 
   Future<void> _setAttendanceForProgram(
-      setAttendanceProgram event, Emitter<AttendanceState> emit) async {
+      SetAttendanceProgram event, Emitter<AttendanceState> emit) async {
 
     try {
       await AttendanceRepository().addAttendanceSystem(

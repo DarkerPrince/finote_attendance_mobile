@@ -41,7 +41,7 @@ class UpdateProgramAttendance extends AttendanceEvent {
 
 
 
-class setAttendanceProgram extends AttendanceEvent {
+class SetAttendanceProgram extends AttendanceEvent {
   List<String> users;
   String programId;
   String statusId;
@@ -49,7 +49,7 @@ class setAttendanceProgram extends AttendanceEvent {
   String controllerId;
   String programDate;
 
-  setAttendanceProgram({required this.users,required this.programId,required this.statusId,required this.permissionReason, required this.controllerId,required this.programDate});
+  SetAttendanceProgram({required this.users,required this.programId,required this.statusId,required this.permissionReason, required this.controllerId,required this.programDate});
   @override
   List<Object?> get props => [users,programId,statusId,permissionReason,controllerId,programDate];
 }
