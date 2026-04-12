@@ -61,43 +61,6 @@ class _ControllerAttendancePageState extends State<ControllerAttendancePage> wit
     }
   }
 
-  /// 🔹 Show options for a single member
-  // void showStatusOptions(int index) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (_) {
-  //       return Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           ListTile(
-  //             title: const Text("Present"),
-  //             onTap: () {
-  //               // updateSingle(index, "Present");
-  //               Navigator.pop(context);
-  //             },
-  //           ),
-  //           ListTile(
-  //             title: const Text("Absent"),
-  //             onTap: () {
-  //               // updateSingle(index, "Absent");
-  //               Navigator.pop(context);
-  //             },
-  //           ),
-  //           ListTile(
-  //             title: const Text("By Permission"),
-  //             onTap: () {
-  //               // updateSingle(index, "By Permission");
-  //               Navigator.pop(context);
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
-  // int selectedCount=0;
-
   @override
   Widget build(BuildContext context) {
 

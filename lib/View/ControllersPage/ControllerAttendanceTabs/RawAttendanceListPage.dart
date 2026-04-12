@@ -6,53 +6,36 @@ import 'package:finote_program/features/attendance/attendance_state.dart';
 import 'package:finote_program/utils/userUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-
 
 /// 🔹 Raw Attendance Page
 class RawAttendanceListPage extends StatefulWidget {
   final ProgramModel program;
-  RawAttendanceListPage({super.key, required this.program});
+
+  const RawAttendanceListPage({super.key, required this.program});
 
   @override
-  State<RawAttendanceListPage> createState() => _RawAttendanceListPageState();
+  State<RawAttendanceListPage> createState() =>
+      _RawAttendanceListPageState();
 }
 
-class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
-
-  String PRESENT_ID = "2549bf8f-8bfb-48ba-9fc0-ec606472c6a2";
-  String ABSENT_ID = "02a27517-b5ab-4e9d-a6cb-89de56a6c03a";
-  String BYPERMISSION_ID = "40d11aab-f71a-470a-abfd-4c620b895f0e";
-
+class _RawAttendanceListPageState
+    extends State<RawAttendanceListPage> {
 
   /// Selected user IDs
   Set<String> selectedAttendanceUser = {};
+
+  /// Optimistically removed users
+  Set<String> completedAttendanceUsers = {};
 
   @override
   void initState() {
     super.initState();
     context.read<AttendanceBloc>().add(
-        LoadProgramAttendanceListUsers(programId: widget.program.id));
-
+      LoadProgramAttendanceListUsers(programId: widget.program.id),
+    );
   }
 
-  /// 🔹 Status color helper
-  Color getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case "present":
-        return Colors.green;
-      case "absent":
-        return Colors.red;
-      case "by permission":
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
-
-  /// 🔹 Toggle user selection
+  /// 🔹 Toggle selection
   void toggleSelection(String memberId) {
     setState(() {
       if (selectedAttendanceUser.contains(memberId)) {
@@ -63,74 +46,105 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
     });
   }
 
-  Set<String> completedAttendanceUsers = {};
+  /// 🔥 OPTIMISTIC BULK ACTION
+  Future<void> bulkAction(String status, bool isPermission) async {
+    final selected = Set<String>.from(selectedAttendanceUser);
 
-  /// 🔹 Bulk action callback
-  bulkAction(String status,bool isPermission) async{
-    print("Updating users ${selectedAttendanceUser.toList()} to $status");
-
-     UserModel? userMap  = await getUserFromLocal();
-
-    // TODO: Dispatch your Bloc event here for bulk update
-    context.read<AttendanceBloc>().add(SetAttendanceProgram(
-      users: selectedAttendanceUser.toList(),
-      statusId: status,
-      permissionReason: "Nothing",
-      programId: widget.program.id,
-      controllerId: userMap!.id,
-      programDate: widget.program.fullProgramDate??DateTime.now().toIso8601String() ));
-
+    /// 🔥 Step 1: Optimistic UI update
     setState(() {
-      // completedAttendanceUsers.addAll(selectedAttendanceUser);
-      selectedAttendanceUser.clear(); // clear selection after action
+      completedAttendanceUsers.addAll(selected);
+      selectedAttendanceUser.clear();
     });
 
+    try {
+      UserModel? userMap = await getUserFromLocal();
+
+      context.read<AttendanceBloc>().add(
+        SetAttendanceProgram(
+          users: selected.toList(),
+          statusId: status,
+          permissionReason: "Nothing",
+          programId: widget.program.id,
+          controllerId: userMap!.id,
+          programDate: widget.program.fullProgramDate ??
+              DateTime.now().toIso8601String(),
+        ),
+      );
+    } catch (e) {
+      /// ❌ Rollback if something crashes immediately
+      setState(() {
+        completedAttendanceUsers.removeAll(selected);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AttendanceBloc, AttendanceState>(
-      builder: (context, state) {
-        if (state is AttendanceLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
+    return BlocListener<AttendanceBloc, AttendanceState>(
+      listener: (context, state) {
+        /// ❌ API failed → rollback UI
         if (state is AttendanceError) {
-          return Center(child: Text(state.message));
-        }
+          setState(() {
+            completedAttendanceUsers.clear();
+          });
 
-        if (state is AttendanceLoaded_ProgramUsersList) {
-          final usersList = state.usersList;
-
-          return Column(
-            children: [
-              /// 🔹 Selected count
-              if (selectedAttendanceUser.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                      "Selected: ${selectedAttendanceUser.length}"),
-                ),
-
-              /// 🔹 Bulk action buttons
-              bulkActionsButtons(),
-
-              /// 🔹 Users list
-              Expanded(
-                child: ListView.builder(
-                  itemCount: usersList.length,
-                  itemBuilder: (context, index) {
-                    final member = usersList[index];
-                    return userAttendanceCard(member.user, index);
-                  },
-                ),
-              ),
-            ],
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Failed to update attendance"),
+            ),
           );
         }
-
-        return const Center(child: Text('Attendance List Page'));
       },
+      child: BlocBuilder<AttendanceBloc, AttendanceState>(
+        builder: (context, state) {
+          if (state is AttendanceLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is AttendanceError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is AttendanceLoaded_ProgramUsersList) {
+            final usersList = state.usersList;
+
+            /// 🔥 Filter out optimistically removed users
+            final filteredUsers = usersList
+                .where((u) =>
+                    !completedAttendanceUsers.contains(u.user.id))
+                .toList();
+
+            return Column(
+              children: [
+                /// 🔹 Selected count
+                if (selectedAttendanceUser.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Selected: ${selectedAttendanceUser.length}",
+                    ),
+                  ),
+
+                /// 🔹 Bulk buttons
+                bulkActionsButtons(),
+
+                /// 🔹 Users list
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredUsers.length,
+                    itemBuilder: (context, index) {
+                      final member = filteredUsers[index];
+                      return userAttendanceCard(member.user);
+                    },
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return const Center(child: Text('Attendance List Page'));
+        },
+      ),
     );
   }
 
@@ -138,86 +152,79 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
   Widget bulkActionsButtons() {
     final isEnabled = selectedAttendanceUser.isNotEmpty;
 
-    return isEnabled?Padding(
+    if (!isEnabled) return const SizedBox();
+
+    return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-            onPressed: isEnabled ? () => bulkAction("2549bf8f-8bfb-48ba-9fc0-ec606472c6a2",false) : null,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green ,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // smaller = less rounded
-              ),
+            onPressed: () => bulkAction(
+                "2549bf8f-8bfb-48ba-9fc0-ec606472c6a2", false),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
             ),
-            child: const Text("Present" ,style: TextStyle(color: Colors.white),),
+            child: const Text("Present",
+                style: TextStyle(color: Colors.white)),
           ),
           ElevatedButton(
-            onPressed: isEnabled ? () => bulkAction("02a27517-b5ab-4e9d-a6cb-89de56a6c03a",false) : null,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // smaller = less rounded
-              ),
+            onPressed: () => bulkAction(
+                "02a27517-b5ab-4e9d-a6cb-89de56a6c03a", false),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
             ),
-            child: const Text("Absent",style: TextStyle(color: Colors.white),),
+            child: const Text("Absent",
+                style: TextStyle(color: Colors.white)),
           ),
           ElevatedButton(
-            onPressed: isEnabled ? () => bulkAction("40d11aab-f71a-470a-abfd-4c620b895f0e",true) : null,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // smaller = less rounded
-              ),
+            onPressed: () => bulkAction(
+                "40d11aab-f71a-470a-abfd-4c620b895f0e", true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
             ),
-            child: Text("Permission",style: TextStyle(color: isEnabled ? Colors.black:Colors.white),),
+            child: const Text("Permission",
+                style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
-    ):Container();
+    );
   }
 
-  /// 🔹 Check if user is selected
-  bool checkIfUserIsSelected(String memberId) { return selectedAttendanceUser.contains(memberId); }
+  /// 🔹 Check selection
+  bool isSelected(String memberId) {
+    return selectedAttendanceUser.contains(memberId);
+  }
 
-  /// 🔹 Single user card
-  Widget userAttendanceCard(UserModel member, int index) {
-
-    if (completedAttendanceUsers.contains(member.id)) {
-      return const SizedBox.shrink(); // hidden
-    }
-
+  /// 🔹 User Card
+  Widget userAttendanceCard(UserModel member) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: checkIfUserIsSelected(member.id)
+        color: isSelected(member.id)
             ? Colors.blueAccent.withOpacity(0.2)
             : Colors.white,
-        border: Border.all(color: Colors.grey.shade400)
+        border: Border.all(color: Colors.grey.shade400),
       ),
       child: ListTile(
         dense: true,
-        onLongPress: () => toggleSelection(member.id),
         onTap: () => toggleSelection(member.id),
+        onLongPress: () => toggleSelection(member.id),
         leading: Checkbox(
-          value: checkIfUserIsSelected(member.id),
+          value: isSelected(member.id),
           onChanged: (_) => toggleSelection(member.id),
         ),
-        title: Text(member.name ,style: TextStyle(fontSize: 16 , fontWeight: FontWeight.w500),),
-        subtitle: Text(member.email==''?"email@finote1619.com":member.email),
-        // trailing: Container(
-        //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        //   decoration: BoxDecoration(
-        //     color: getStatusColor("Present").withOpacity(0.2),
-        //     borderRadius: BorderRadius.circular(10),
-        //   ),
-        //   child: Text(
-        //     'status', // TODO: Replace with actual member status
-        //     style: TextStyle(
-        //       color: getStatusColor("Present"),
-        //       fontWeight: FontWeight.bold,
-        //     ),
-        //   ),
-        // ),
+        title: Text(
+          member.name,
+          style: const TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        subtitle: Text(
+          member.email.isEmpty
+              ? "email@finote1619.com"
+              : member.email,
+        ),
       ),
     );
   }
