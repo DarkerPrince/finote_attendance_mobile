@@ -75,11 +75,10 @@ class _RawAttendanceListPageState extends State<RawAttendanceListPage> {
     context.read<AttendanceBloc>().add(SetAttendanceProgram(
       users: selectedAttendanceUser.toList(),
       statusId: status,
-      permissionReason: "Permission Reason",
+      permissionReason: "Nothing",
       programId: widget.program.id,
       controllerId: userMap!.id,
-      programDate: widget.program.startDate
-    ));
+      programDate: widget.program.fullProgramDate??DateTime.now().toIso8601String() ));
 
     setState(() {
       // completedAttendanceUsers.addAll(selectedAttendanceUser);

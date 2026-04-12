@@ -105,10 +105,11 @@ class _ControllerAttendancePageState extends State<ControllerAttendancePage> wit
       appBar: AppBar(
         title: const Text("Attendance"),
         bottom: TabBar(
+          labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold , color: Colors.blueAccent),
             controller: _tabController,
             tabs: const [
               Tab(text: "All"),
-              Tab(text: "Present")
+              Tab(text: "Taken")
              ]),
         actions: [
           IconButton(onPressed: (){

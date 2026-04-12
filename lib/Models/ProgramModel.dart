@@ -15,6 +15,7 @@ class ProgramModel {
   final String? youtube_link;
   final String? programtype;
   final String? location;
+  final String? fullProgramDate;
 
 
   ProgramModel({
@@ -30,8 +31,8 @@ class ProgramModel {
     required this.tiktok_link,
     required this.telegram_link,
     required this.programtype,
-    required this.location
-
+    required this.location,
+    required this.fullProgramDate
   });
 
   factory ProgramModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +59,7 @@ class ProgramModel {
       instagram_link: json['instagram_link'],
       location: json['location']['title']??"",
       programtype: json['programtype']['title']??"",
+      fullProgramDate: json['startdate']??"",
     );
   }
 
@@ -85,6 +87,7 @@ class ProgramModel {
       instagram_link: json['instagram_link']??"",
       location: json['location']??"",
       programtype: json['programtype']??"",
+      fullProgramDate: json['startdate']??"",
     );
   }
 
