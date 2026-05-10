@@ -1,3 +1,4 @@
+import 'package:finote_program/Constants/ColorConstant.dart';
 import 'package:finote_program/Models/AttendanceModel.dart';
 import 'package:finote_program/utils/colorUtils.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +23,11 @@ class Attendancecard extends StatelessWidget {
           Container(
             height: 50,
             width: 50,
-            child: Icon(Icons.calendar_view_day),
+            child: Icon(Icons.church,color: Colors.grey,),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6)
               ,
-              color: Colors.blueAccent.withOpacity(0.3),
+              color: Colors.grey.withOpacity(0.1),
             ),
           ),
           const SizedBox(width: 12),
@@ -36,21 +37,27 @@ class Attendancecard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 📌 Title
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 4,
+
+                  // mainAxisSize: MainAxisSize.max,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 200,
-                      child: Text(
-                        attendance.title,
-                        maxLines: 1, // how many lines you want
-                        overflow: TextOverflow.ellipsis, // adds ...
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Wrap(
+                      children: [
+                        Text(
+                          attendance.title,
+                          softWrap: true,
+                          maxLines: 1, // how many lines you want
+                          overflow: TextOverflow.ellipsis, // adds ...
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
 
                     Container(

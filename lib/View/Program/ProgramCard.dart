@@ -45,6 +45,7 @@ class Programcard extends StatelessWidget {
                           padding: EdgeInsets.symmetric(vertical: 2,horizontal: 6),
                           child: Text(
                             program.programtype??"Other",
+                            // "Type",
                             style: TextStyle(fontSize: 12 ,color: Colors.blueAccent ),
                           ),
                         ),

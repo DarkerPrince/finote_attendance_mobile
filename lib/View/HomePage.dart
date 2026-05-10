@@ -1,20 +1,11 @@
+import 'package:finote_program/Constants/ColorConstant.dart';
 import 'package:finote_program/View/Attendance/AttendancePage.dart';
 import 'package:finote_program/View/Profile/ProfilePage.dart';
 import 'package:finote_program/View/ProgramsPage.dart';
 import 'package:flutter/material.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.userId});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String userId;
 
@@ -23,21 +14,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   late final List<Widget> _pages;
+
+  int _currentIndex = 0;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
     _pages = [
-      ProgramsPage(userId: widget.userId,),
+      ProgramsPage(userId: widget.userId),
       Attendancepage(userId: widget.userId),
-      ProfilePage()
+      const ProfilePage(),
     ];
   }
-
-  int _currentIndex = 0;
 
   void _onTabTapped(int index) {
     setState(() {
@@ -45,30 +35,105 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  final List<Map<String, dynamic>> _navItems = [
+    {
+      "icon": Icons.auto_stories_rounded,
+      "label": "Programs",
+    },
+    {
+      "icon": Icons.fact_check_rounded,
+      "label": "Attendance",
+    },
+    {
+      "icon": Icons.person_rounded,
+      "label": "Profile",
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper),
-            label: "Programs",
+      backgroundColor: const Color(0xffF5F7FA),
+
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        child: _pages[_currentIndex],
+      ),
+
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
+
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(
+            _navItems.length,
+                (index) {
+              final isSelected = _currentIndex == index;
+
+              return GestureDetector(
+                onTap: () => _onTabTapped(index),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isSelected ? 18 : 12,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xff2563EB)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(24),
+                      boxShadow: isSelected ?[BoxShadow(color: primaryColor.withOpacity(0.4),spreadRadius: 2 ,blurStyle: BlurStyle.normal,blurRadius: 16)]:[]
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _navItems[index]["icon"],
+                        color: isSelected
+                            ? Colors.white
+                            : Colors.grey.shade600,
+                        size: 24,
+                      ),
+
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 250),
+                        child: isSelected
+                            ? Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            _navItems[index]["label"],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        )
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: "Attendance",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
-        ],
+        ),
       ),
     );
   }

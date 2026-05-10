@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
           create: (_) => AttendanceBloc(), // load programs immediately
         ),
       ],
+
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,

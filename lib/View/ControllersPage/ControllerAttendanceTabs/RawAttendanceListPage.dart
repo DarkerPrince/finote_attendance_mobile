@@ -221,9 +221,7 @@ class _RawAttendanceListPageState
               fontSize: 16, fontWeight: FontWeight.w500),
         ),
         subtitle: Text(
-          member.email.isEmpty
-              ? "email@finote1619.com"
-              : member.email,
+          member.chr_name??"N/A",
         ),
       ),
     );

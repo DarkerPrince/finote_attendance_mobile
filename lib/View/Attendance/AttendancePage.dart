@@ -1,3 +1,4 @@
+import 'package:finote_program/Constants/ColorConstant.dart';
 import 'package:finote_program/View/Attendance/AttendanceCard.dart';
 import 'package:finote_program/features/attendance/attendance_bloc.dart';
 import 'package:finote_program/features/attendance/attendance_event.dart';
@@ -53,12 +54,13 @@ class _AttendancepageState extends State<Attendancepage> {
                           width: 50,
                           height: 50,
                           indicatorXY: 0.0,
-                          indicator: Icon(Icons.calendar_month, size: 14),
+                          indicator: Container(
+                              child: Icon(Icons.calendar_month, color: primaryColor, size: 14)),
                         ),
 
 
                         beforeLineStyle: LineStyle(
-                          color: Colors.grey.shade300,
+                          color: primaryColor.withOpacity(0.2),
                           thickness: 2,
                         ),
 

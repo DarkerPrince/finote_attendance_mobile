@@ -1,3 +1,4 @@
+import 'package:finote_program/Constants/ColorConstant.dart';
 import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/View/Auth/AuthPage.dart';
 import 'package:finote_program/View/ControllersPage/ControllersPage.dart';
@@ -79,10 +80,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget ProgramManagementButton(UserModel user){
     if (!isUserAdminOrController(user)) return const SizedBox(); // hide completely
 
-    return Card(
-      shadowColor: Colors.blueAccent.withOpacity(0.4),
-      elevation: 4,
-      shape: Border.all(color: Colors.blueAccent),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        border: Border.all(color: primaryColor),
+        boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.1),spreadRadius: 1 ,blurStyle: BlurStyle.normal,blurRadius: 12)]
+      ),
       child: ListTile(
         leading: const Icon(Icons.list_alt, color: Colors.blueAccent),
         title: const Text(
