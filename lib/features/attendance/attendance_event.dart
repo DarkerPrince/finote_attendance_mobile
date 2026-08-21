@@ -33,10 +33,12 @@ class UpdateProgramAttendance extends AttendanceEvent {
   String? programId;
   String? userId;
   String? statusId;
+  String? controllerId;
+  String? programDate;
 
-  UpdateProgramAttendance({required this.programId,required this.userId,required this.statusId});
+  UpdateProgramAttendance({required this.programId,required this.userId,required this.statusId, required this.controllerId, this.programDate});
   @override
-  List<Object?> get props => [programId];
+  List<Object?> get props => [programId,userId,statusId,controllerId,programDate];
 }
 
 

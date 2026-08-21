@@ -12,11 +12,13 @@ class AttendanceModel {
   });
 
   factory AttendanceModel.fromJson(Map<String, dynamic> json) {
+    final program = json['program'];
+    final status = json['status'];
     return AttendanceModel(
-      title: json['program']['title'],
-      description: json['program']['description'],
-      startDate: json['program']['startdate'],
-      status: json['status']['name']
+      title: program is Map ? program['title'] ?? "" : "",
+      description: program is Map ? program['description'] ?? "" : "",
+      startDate: program is Map ? program['startdate'] ?? "" : "",
+      status: status is Map ? status['name'] ?? "" : ""
     );
   }
 }
@@ -32,13 +34,15 @@ class GroupAttendanceModel {
   });
 
   factory GroupAttendanceModel.fromJson(Map<String, dynamic> json) {
-    final List attendances = json['attendances'];
+    final attendances = json['attendances'];
+
+    final List<AttendanceModel> programs = attendances is List
+        ? attendances.map((e) => AttendanceModel.fromJson(e as Map<String, dynamic>)).toList()
+        : [];
 
     return GroupAttendanceModel(
-      attendanceDate: json['day'],
-      attendancePrograms: attendances
-          .map((e) => AttendanceModel.fromJson(e))
-          .toList(),
+      attendanceDate: json['day'] ?? "",
+      attendancePrograms: programs,
     );
   }
 }

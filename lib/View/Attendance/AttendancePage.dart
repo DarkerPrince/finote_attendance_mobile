@@ -5,7 +5,6 @@ import 'package:finote_program/features/attendance/attendance_event.dart';
 import 'package:finote_program/features/attendance/attendance_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class Attendancepage extends StatefulWidget {

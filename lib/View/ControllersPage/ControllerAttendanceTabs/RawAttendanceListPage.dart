@@ -1,3 +1,4 @@
+import 'package:finote_program/Constants/StringConstants.dart';
 import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/features/attendance/attendance_bloc.dart';
@@ -82,8 +83,8 @@ class _RawAttendanceListPageState
   Widget build(BuildContext context) {
     return BlocListener<AttendanceBloc, AttendanceState>(
       listener: (context, state) {
-        /// ❌ API failed → rollback UI
-        if (state is AttendanceError) {
+        /// ❌ API failed → rollback UI (skip single-update errors, handled in Taken tab)
+        if (state is AttendanceError && !state.message.contains("update")) {
           setState(() {
             completedAttendanceUsers.clear();
           });
@@ -160,8 +161,7 @@ class _RawAttendanceListPageState
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-            onPressed: () => bulkAction(
-                "2549bf8f-8bfb-48ba-9fc0-ec606472c6a2", false),
+            onPressed: () => bulkAction(statusPresentId, false),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
             ),
@@ -169,8 +169,7 @@ class _RawAttendanceListPageState
                 style: TextStyle(color: Colors.white)),
           ),
           ElevatedButton(
-            onPressed: () => bulkAction(
-                "02a27517-b5ab-4e9d-a6cb-89de56a6c03a", false),
+            onPressed: () => bulkAction(statusAbsentId, false),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
@@ -178,8 +177,7 @@ class _RawAttendanceListPageState
                 style: TextStyle(color: Colors.white)),
           ),
           ElevatedButton(
-            onPressed: () => bulkAction(
-                "40d11aab-f71a-470a-abfd-4c620b895f0e", true),
+            onPressed: () => bulkAction(statusPermissionId, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
             ),

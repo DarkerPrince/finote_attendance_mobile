@@ -2,13 +2,9 @@ import 'package:finote_program/Constants/ColorConstant.dart';
 import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/View/Auth/AuthPage.dart';
 import 'package:finote_program/View/ControllersPage/ControllersPage.dart';
-import 'package:finote_program/features/auth/auth_bloc.dart';
-import 'package:finote_program/features/auth/auth_event.dart';
-import 'package:finote_program/features/auth/auth_state.dart';
 import 'package:finote_program/utils/dateUtils.dart';
 import 'package:finote_program/utils/userUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {

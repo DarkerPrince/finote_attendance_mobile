@@ -11,7 +11,6 @@ class ProgramsRepository {
   Future<List<ProgramModel>> fetchPrograms(String userId) async {
     final url = Uri.parse('$baseUrl/programs/personalized/$userId');
 
-    // 🔑 Get token from storage
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
@@ -19,20 +18,34 @@ class ProgramsRepository {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // ✅ ADD TOKEN HERE
+        'Authorization': 'Bearer $token',
       },
     );
-    print("GETTING PERSONALIZED PROGRAM URL \n: $url");
-    print("TOKEN USED: $token");
+
+    print("GETTING PERSONALIZED PROGRAM URL: $url");
     print("RESPONSE: ${response.body}");
 
     if (response.statusCode == 200) {
       print("Response is 200 so start with that");
-      final List jsonData = json.decode(response.body);
 
-      return jsonData.map((e) => ProgramModel.fromJson(e)).toList();
+      // Decode the complete response as a Map
+      final Map<String, dynamic> responseData =
+      json.decode(response.body);
+
+      final programs = responseData['data'];
+
+      if (programs is! List) {
+        print("Programs data is not a list: ${programs.runtimeType} - $programs");
+        return [];
+      }
+
+      return programs
+          .map((e) => ProgramModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } else {
-      throw Exception("Failed to load programs");
+      throw Exception(
+        "Failed to load programs: ${response.statusCode}",
+      );
     }
   }
   Future<List<ProgramModel>> fetchControllerProgramsRepository(userId) async {
@@ -52,14 +65,23 @@ class ProgramsRepository {
       },
     );
 
-    print("TOKEN USED: $token");
     print("RESPONSE: ${response.body}");
 
     if (response.statusCode == 200) {
       final Map<String,dynamic> jsonData = json.decode(response.body);
       print("the list of Controlled Programs are $jsonData");
-      final List controllersPrograms  = jsonData['controllers'];
-      return controllersPrograms.map((e) => ProgramModel.fromControllerJson(e)).toList();
+      final programs = jsonData['data'];
+      if (programs is! List) {
+        throw const FormatException(
+          "Controller programs response does not contain a data list",
+        );
+      }
+
+      return programs
+          .map((item) => ProgramModel.fromControllerJson(
+                Map<String, dynamic>.from(item as Map),
+              ))
+          .toList();
     } else {
       throw Exception("Failed to load programs");
     }

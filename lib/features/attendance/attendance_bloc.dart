@@ -1,5 +1,4 @@
 import 'package:finote_program/Models/AttendanceUserModel.dart';
-import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/Repository/attendanceRepository.dart';
 import 'package:finote_program/features/attendance/attendance_event.dart';
 import 'package:finote_program/features/attendance/attendance_state.dart';
@@ -14,7 +13,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     on<SetAttendanceProgram>(_setAttendanceForProgram);
     on<LoadProgramAttendanceListUsers>(_onLoadProgramUsersAttendance);
     on<LoadProgramAttendanceActionTakenListUsers>(_onLoadProgramUsersActionTakenAttendance);
-    // on<UpdateProgramAttendance>(_onupdateAttendance);
+    on<UpdateProgramAttendance>(_onupdateAttendance);
   }
 
   Future<void> _onLoadAttendance(
@@ -50,7 +49,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     emit(AttendanceLoading());
     try {
       print(event.programId);
-      final attendance = await AttendanceRepository().fetchProgramActionTakenAttendanceUsersList(event.programId);
+      final attendance = await AttendanceRepository().fetchProgramActionTakenAttendanceUsersList(event.programId.toString());
 
       emit(AttendanceLoaded_ProgramUsersList(attendance));
     } catch (e) {
@@ -59,6 +58,25 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     }
   }
 
+
+
+  Future<void> _onupdateAttendance(
+      UpdateProgramAttendance event, Emitter<AttendanceState> emit) async {
+    try {
+      final attendance = await AttendanceRepository().updateAttendanceStatus(
+        programId: event.programId!,
+        controllerId: event.controllerId!,
+        userId: event.userId!,
+        statusId: event.statusId!,
+        programDate: event.programDate,
+      );
+
+      emit(AttendanceLoaded_ProgramUsersList(attendance));
+    } catch (e) {
+      print("error on attendance update $e");
+      emit(AttendanceError("Failed to update attendance"));
+    }
+  }
 
 
   Future<void> _setAttendanceForProgram(

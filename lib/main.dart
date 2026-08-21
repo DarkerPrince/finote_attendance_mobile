@@ -1,5 +1,4 @@
 import 'package:finote_program/View/OnboardingScreen.dart';
-import 'package:finote_program/View/SplashScreen.dart';
 import 'package:finote_program/features/attendance/attendance_bloc.dart';
 import 'package:finote_program/features/programs/program_bloc.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,10 @@
 import 'package:finote_program/Constants/ColorConstant.dart';
+import 'package:finote_program/Constants/StringConstants.dart';
 import 'package:finote_program/View/Attendance/AttendancePage.dart';
 import 'package:finote_program/View/Profile/ProfilePage.dart';
 import 'package:finote_program/View/ProgramsPage.dart';
+import 'package:finote_program/View/UpdateDialog.dart';
+import 'package:finote_program/utils/updateUtils.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -27,6 +30,23 @@ class _MyHomePageState extends State<MyHomePage> {
       Attendancepage(userId: widget.userId),
       const ProfilePage(),
     ];
+
+    _checkForUpdates();
+  }
+
+  Future<void> _checkForUpdates() async {
+    final updateInfo = await UpdateUtils.checkForUpdate(baseUrl);
+
+    if (!mounted) return;
+
+    if (updateInfo['hasUpdate'] == true) {
+      UpdateDialog.show(
+        context,
+        latestVersion: updateInfo['latestVersion'],
+        storeUrl: updateInfo['storeUrl'],
+        updateMessage: updateInfo['updateMessage'],
+      );
+    }
   }
 
   void _onTabTapped(int index) {

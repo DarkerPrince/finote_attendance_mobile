@@ -1,7 +1,6 @@
 import 'package:finote_program/Models/ProgramModel.dart';
 import 'package:finote_program/View/Program/InfoItem.dart';
 import 'package:finote_program/View/Program/ProgramDetailPage.dart';
-import 'package:finote_program/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
 
 class Programcard extends StatelessWidget {

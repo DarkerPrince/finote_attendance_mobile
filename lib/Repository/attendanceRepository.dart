@@ -29,10 +29,17 @@ class AttendanceRepository {
 
     if (response.statusCode == 200) {
 
-      final List jsonData = json.decode(response.body);
-      // print(" ========= \n\n\n Attendance For User Detail is $jsonData \n\n\n\ ========== \n\n\n");
+      final Map<String, dynamic> decoded = json.decode(response.body);
 
-      return jsonData.map((e) => GroupAttendanceModel.fromJson(e)).toList();
+      final List<dynamic> data = decoded['data'] ?? [];
+
+      return data
+          .map(
+            (e) => GroupAttendanceModel.fromJson(
+          e as Map<String, dynamic>,
+        ),
+      )
+          .toList();
     } else {
       throw Exception("Failed to load programs");
     }
@@ -84,6 +91,49 @@ class AttendanceRepository {
     return attendanceUsersList;
   }
 
+  /// 🔹 Update an existing attendance status (backend upserts on same endpoint)
+  Future<List<AttendanceUserModel>> updateAttendanceStatus({
+    required String programId,
+    required String controllerId,
+    required String userId,
+    required String statusId,
+    String? programDate,
+  }) async {
+    final url = Uri.parse("$baseUrl/programs/attendance");
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+
+    Map<String, dynamic> attendanceData = {
+      'controller_id': controllerId,
+      'program_id': programId,
+      'status_id': statusId,
+      'createdat': programDate ?? DateTime.now().toIso8601String(),
+      'updatedat': DateTime.now().toIso8601String(),
+      'user_id': [userId],
+      'permission_reason': "",
+    };
+
+    print("update Attendance Request Payload: $attendanceData");
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(attendanceData),
+    );
+
+    print("update Attendance RESPONSE: ${response.body}");
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception("Failed to update attendance: ${response.statusCode}");
+    }
+
+    return fetchProgramActionTakenAttendanceUsersList(programId);
+  }
+
   Future<List<AttendanceUserModel>> fetchProgramAttendanceUsersList(programId) async {
     final url = Uri.parse("$baseUrl/programs/$programId");
 
@@ -109,18 +159,35 @@ class AttendanceRepository {
 
     if (response.statusCode == 200) {
       final List<AttendanceUserModel> attendanceUsersList =
-      usersList.map<AttendanceUserModel>((user) {
+      usersList.map<AttendanceUserModel>((userData) {
+
+        // 1. Extract the status from the API response (adjust the key name if your API uses something else)
+        // We use ?? to provide a default if the API field is null
+        final String apiStatus = userData['status'] ?? "Not Set";
+
+        // 2. Determine color based on the status
+        String statusColor;
+        switch (apiStatus.toLowerCase()) {
+          case 'present':
+            statusColor = "#4CAF50"; // Green
+            break;
+          case 'absent':
+            statusColor = "#F44336"; // Red
+            break;
+          case 'permission':
+            statusColor = "#FFC107"; // Amber/Yellow
+            break;
+          default:
+            statusColor = "#9E9E9E"; // Grey
+        }
 
         return AttendanceUserModel(
-          user: UserModel.fromJson(user),
-          /// ✅ DEFAULT VALUES (your requirement)
-          status: "Not Set",
-          color: "#9E9E9E",
-          // grey
+          user: UserModel.fromJson(userData),
+          status: apiStatus, // ✅ Use the value from API
+          color: statusColor, // ✅ Use the dynamic color
         );
 
       }).toList();
-      print(" ========= \n Fetch Program Attendance - JSONDATA $jsonData \n ========== \n\n\n");
 
       return attendanceUsersList;
     } else {
@@ -128,7 +195,8 @@ class AttendanceRepository {
     }
   }
 
-  Future<List<AttendanceUserModel>> fetchProgramActionTakenAttendanceUsersList(programId) async {
+  Future<List<AttendanceUserModel>>
+  fetchProgramActionTakenAttendanceUsersList(String programId) async {
     final url = Uri.parse("$baseUrl/programs/attendance/$programId");
 
     final prefs = await SharedPreferences.getInstance();
@@ -142,13 +210,37 @@ class AttendanceRepository {
       },
     );
 
-    final Map<String, dynamic> jsonData = json.decode(response.body);
-    final List<dynamic> usersList = jsonData['users'] ?? [];
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
 
-    final List<AttendanceUserModel> attendanceUsersList =
-    usersList.map((item) => AttendanceUserModel.fromJson(item)).toList();
+      // API response:
+      // {
+      //   attendanceSummary: {...},
+      //   data: [ ... ],
+      //   pagination: {...}
+      // }
+      final List<dynamic> usersList = jsonData['data'] ?? [];
 
-    return attendanceUsersList;
+      print(
+        "=========\n"
+            "Fetch Program Attendance Action Taken UsersList\n"
+            "Total: ${usersList.length}\n"
+            "$usersList\n"
+            "=========\n",
+      );
+
+      return usersList
+          .map(
+            (item) => AttendanceUserModel.fromJson(
+          item as Map<String, dynamic>,
+        ),
+      )
+          .toList();
+    } else {
+      throw Exception(
+        "Failed to fetch attendance users: ${response.statusCode}",
+      );
+    }
   }
 
 

@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:finote_program/Models/AttendanceModel.dart';
 import 'package:finote_program/Models/AttendanceUserModel.dart';
-import 'package:finote_program/Models/UserModel.dart';
 
 abstract class AttendanceState extends Equatable {
   @override

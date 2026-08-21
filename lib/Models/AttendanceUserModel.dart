@@ -12,8 +12,9 @@ class AttendanceUserModel {
   });
 
   factory AttendanceUserModel.fromJson(Map<String, dynamic> json) {
+    final userData = json['user'];
     return AttendanceUserModel(
-      user: UserModel.fromJson(json['user']),
+      user: userData is Map<String, dynamic> ? UserModel.fromJson(userData) : UserModel(id: "", name: "", email: ""),
       status: json['status']?['title'] ?? "Unknown",
       color: json['status']?['color'] ?? "#000000"
     );

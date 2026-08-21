@@ -1,11 +1,9 @@
 import 'package:finote_program/Models/ProgramModel.dart';
-import 'package:finote_program/Models/UserModel.dart';
 import 'package:finote_program/View/ControllersPage/ControllerAttendanceTabs/ActionTakenUsersListPage.dart';
 import 'package:finote_program/View/ControllersPage/ControllerAttendanceTabs/RawAttendanceListPage.dart';
 import 'package:finote_program/View/Program/ProgramDetailPage.dart';
 import 'package:finote_program/features/attendance/attendance_bloc.dart';
 import 'package:finote_program/features/attendance/attendance_event.dart';
-import 'package:finote_program/features/attendance/attendance_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,6 +27,8 @@ class _ControllerAttendancePageState extends State<ControllerAttendancePage> wit
     // TODO: implement initState
     super.initState();
 
+    context.read<AttendanceBloc>().add(LoadProgramAttendanceListUsers(programId: widget.program.id));
+
     _tabController = TabController(length: 2, vsync: this);
 
     _tabController.addListener(() {
@@ -37,7 +37,7 @@ class _ControllerAttendancePageState extends State<ControllerAttendancePage> wit
       });
     });
 
-    context.read<AttendanceBloc>().add(LoadProgramAttendanceListUsers(programId: widget.program.id));
+
   }
 
   @override

@@ -1,5 +1,4 @@
 import 'package:finote_program/Models/ProgramModel.dart';
-import 'package:finote_program/View/ControllersPage/ControllerAttendancePage.dart';
 import 'package:finote_program/View/ControllersPage/ControllerProgramCard.dart';
 import 'package:finote_program/features/programs/program_bloc.dart';
 import 'package:finote_program/features/programs/program_event.dart';
